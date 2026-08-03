@@ -6,6 +6,7 @@ import authRouter from './routes/auth.routes.js';
 import adminRouter from './routes/admin.routes.js';
 import companiesRouter from './routes/companies.routes.js';
 import clientsRouter from './routes/clients.routes.js';
+import whatifRouter from './routes/whatif.routes.js';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/api/auth',      authRouter);
 app.use('/api/admin',     adminRouter);
 app.use('/api/companies', companiesRouter);
 app.use('/api/clients',   clientsRouter);
+app.use('/api/whatif',    whatifRouter);
 
 // ── Error handling (must be registered last) ────────
 app.use(notFoundHandler);

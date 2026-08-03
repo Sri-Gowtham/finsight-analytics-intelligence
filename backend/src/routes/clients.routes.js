@@ -6,6 +6,6 @@ const router = Router();
 
 router.use(requireAuth);
 
-router.get('/:clientId/portfolio', getClientPortfolio);
+router.get('/:clientName/portfolio', getClientPortfolio);
 
 export default router;

@@ -1,13 +1,13 @@
 import { pool } from '../config/db.js';
 
 /**
- * GET /api/clients/:clientId/portfolio
+ * GET /api/clients/:clientName/portfolio
  * Returns the banks a specific client holds (from client_portfolios),
  * joined with each bank's latest metrics.
  */
 export async function getClientPortfolio(req, res, next) {
   try {
-    const { clientId } = req.params;
+    const { clientName } = req.params;
 
     const { rows } = await pool.query(
       `SELECT
@@ -27,16 +27,16 @@ export async function getClientPortfolio(req, res, next) {
            ORDER  BY metric_name, timestamp DESC
          ) sub
        ) fm ON true
-       WHERE cp.client_id = $1
+       WHERE cp.client_name = $1
        ORDER BY c.name`,
-      [clientId],
+      [clientName],
     );
 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'No portfolio found for this client' });
     }
 
-    return res.json({ client_id: Number(clientId), portfolio: rows });
+    return res.json({ client_name: clientName, portfolio: rows });
   } catch (err) {
     next(err);
   }
