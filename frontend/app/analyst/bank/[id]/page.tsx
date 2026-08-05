@@ -3,7 +3,7 @@
 import BankDetailClient from './client';
 import { cookies } from 'next/headers';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
 
 export default async function BankDetailPage({
   params,

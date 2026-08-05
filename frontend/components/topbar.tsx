@@ -32,7 +32,9 @@ export function Topbar() {
         <div className="flex items-center gap-3 pl-6 border-l border-border">
           <div className="text-right">
             <p className="text-sm font-medium text-foreground">{user?.name}</p>
-            <p className="text-xs text-text-tertiary capitalize">{user?.role}</p>
+            <p className="text-xs text-text-tertiary">
+              {user?.role === 'cfo' ? 'CFO' : user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ''}
+            </p>
           </div>
           <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-lg">
             {user?.avatar}

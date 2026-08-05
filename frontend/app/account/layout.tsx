@@ -2,7 +2,7 @@ import { Sidebar } from '@/components/sidebar';
 import { Topbar } from '@/components/topbar';
 import { RoleGuard } from '@/components/role-guard';
 
-export default function AppLayout({
+export default function AccountLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ export default function AppLayout({
         <div className="flex-1 flex flex-col overflow-hidden">
           <Topbar />
           <main className="flex-1 overflow-auto">
-            <div className="max-w-7xl mx-auto w-full h-full">
+            <div className="max-w-7xl mx-auto w-full">
               {children}
             </div>
           </main>

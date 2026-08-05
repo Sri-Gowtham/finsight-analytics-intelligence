@@ -13,10 +13,10 @@ function required(name) {
 }
 
 export const env = {
-  port:        process.env.PORT || 3000,
+  port:        process.env.PORT || 3001,
   databaseUrl: required('DATABASE_URL'),
   jwtSecret:   required('JWT_SECRET'),
   openaiKey:   process.env.OPENAI_API_KEY || '',   // optional at boot
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
   nodeEnv:     process.env.NODE_ENV || 'development',
 };

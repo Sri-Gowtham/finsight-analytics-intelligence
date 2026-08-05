@@ -1,9 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import { useBanks } from '@/lib/hooks';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RoleGuard } from '@/components/role-guard';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+
+type MetricKey = 'totalAssets' | 'netIncome' | 'capitalRatio' | 'returnOnAssets' | 'returnOnEquity' | 'costToIncomeRatio' | 'loanToDepositRatio' | 'nonPerformingLoansRatio';
+
+const METRICS: { key: MetricKey; label: string; format: (v: number) => string } = [
+  { key: 'totalAssets', label: 'Total Assets (₹ Cr)', format: (v: number) => `₹${v.toLocaleString('en-IN')}` },
+  { key: 'netIncome', label: 'Net Income (₹ Cr)', format: (v: number) => `₹${v.toLocaleString('en-IN')}` },
+  { key: 'capitalRatio', label: 'Capital Ratio (%)', format: (v: number) => `${v.toFixed(2)}%` },
+  { key: 'returnOnAssets', label: 'ROA (%)', format: (v: number) => `${v.toFixed(2)}%` },
+  { key: 'returnOnEquity', label: 'ROE (%)', format: (v: number) => `${v.toFixed(2)}%` },
+  { key: 'costToIncomeRatio', label: 'Cost-to-Income (%)', format: (v: number) => `${v.toFixed(1)}%` },
+  { key: 'loanToDepositRatio', label: 'Loan-to-Deposit (%)', format: (v: number) => `${v.toFixed(1)}%` },
+  { key: 'nonPerformingLoansRatio', label: 'NPA Ratio (%)', format: (v: number) => `${v.toFixed(2)}%` },
+];
 
 export default function PeerComparisonPage() {
   return (
@@ -15,17 +30,7 @@ export default function PeerComparisonPage() {
 
 function PeerComparisonContent() {
   const { data: banks, isLoading } = useBanks();
-
-  const metrics = [
-    { key: 'totalAssets', label: 'Total Assets (B USD)', format: (v: number) => (v / 1000).toFixed(1) },
-    { key: 'netIncome', label: 'Net Income (B USD)', format: (v: number) => (v / 1000).toFixed(1) },
-    { key: 'capitalRatio', label: 'Capital Ratio (%)', format: (v: number) => v.toFixed(2) },
-    { key: 'returnOnAssets', label: 'ROA (%)', format: (v: number) => v.toFixed(2) },
-    { key: 'returnOnEquity', label: 'ROE (%)', format: (v: number) => v.toFixed(2) },
-    { key: 'costToIncomeRatio', label: 'Cost-to-Income (%)', format: (v: number) => (v * 100).toFixed(1) },
-    { key: 'loanToDepositRatio', label: 'Loan-to-Deposit (%)', format: (v: number) => (v * 100).toFixed(1) },
-    { key: 'nonPerformingLoansRatio', label: 'NPL Ratio (%)', format: (v: number) => (v * 100).toFixed(2) },
-  ];
+  const [selectedMetric, setSelectedMetric] = useState<MetricKey>('returnOnEquity');
 
   if (isLoading) {
     return (
@@ -35,85 +40,106 @@ function PeerComparisonContent() {
     );
   }
 
+  const metricDef = METRICS.find(m => m.key === selectedMetric)!;
+
+  // Prepare chart data
+  const chartData = banks.map(bank => {
+    let val = bank.metrics[selectedMetric] as number;
+    // Adjust NPL ratio which might be stored as decimal (e.g. 1.17 instead of 0.0117? Wait, DB seeded 1.17 for NPA)
+    // Actually the DB seeded NPA_percent as 1.17, so it's already a percent. 
+    // The previous frontend multiplied by 100 in the format function for some metrics.
+    // Let's NOT multiply by 100 since the DB seed uses real percentages (e.g., ROE 17.0).
+    return {
+      name: bank.ticker,
+      fullName: bank.name,
+      value: val,
+    };
+  });
+
+  const maxValue = Math.max(...chartData.map(d => d.value));
+
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="p-8 space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Peer Comparison</h1>
-        <p className="text-text-secondary mt-1">Compare key financial metrics across banks</p>
-      </div>
-
-      {/* Controls */}
-      <div className="flex gap-4">
-        <select className="px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50">
-          <option>All Banks</option>
-          <option>Top 3</option>
-          <option>Regional Leaders</option>
-        </select>
-        <Button variant="outline">Export Comparison</Button>
-      </div>
-
-      {/* Comparison Table */}
-      <div className="bg-background border border-border rounded-xl overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-surface border-b border-border">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-foreground sticky left-0 bg-surface">
-                Metric
-              </th>
-              {banks.map((bank) => (
-                <th key={bank.id} className="px-6 py-3 text-right text-sm font-semibold text-foreground whitespace-nowrap">
-                  <div className="font-bold">{bank.ticker}</div>
-                  <div className="text-xs text-text-secondary font-normal">{bank.name}</div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {metrics.map((metric, idx) => (
-              <tr
-                key={metric.key}
-                className={`border-b border-border ${idx % 2 === 0 ? 'bg-background' : 'bg-surface'}`}
-              >
-                <td className="px-6 py-4 text-sm font-medium text-foreground sticky left-0 bg-inherit">
-                  {metric.label}
-                </td>
-                {banks.map((bank) => {
-                  const value = bank.metrics[metric.key as keyof typeof bank.metrics] as number;
-                  const values = banks.map((b) => b.metrics[metric.key as keyof typeof b.metrics] as number);
-                  const isMax = value === Math.max(...values);
-                  const isMin = value === Math.min(...values);
-
-                  return (
-                    <td
-                      key={bank.id}
-                      className={`px-6 py-4 text-right text-sm font-medium ${
-                        isMax ? 'text-emerald-600 bg-emerald-50/30' : isMin ? 'text-amber-600 bg-amber-50/30' : 'text-foreground'
-                      }`}
-                    >
-                      <div className="flex items-center justify-end gap-2">
-                        {metric.format(value)}
-                        {isMax && <TrendingUp className="w-4 h-4" />}
-                        {isMin && <TrendingDown className="w-4 h-4" />}
-                      </div>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Legend */}
-      <div className="flex gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-4 bg-emerald-100 border border-emerald-200 rounded"></span>
-          <span className="text-text-secondary">Highest value</span>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Peer Comparison</h1>
+          <p className="text-text-secondary mt-1">Compare key financial metrics across banks</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-4 bg-amber-100 border border-amber-200 rounded"></span>
-          <span className="text-text-secondary">Lowest value</span>
+        <div className="flex gap-4">
+          <Button variant="outline">Export Comparison</Button>
+        </div>
+      </div>
+
+      {/* Chart Section */}
+      <div className="bg-background border border-border rounded-xl p-6 space-y-6 shadow-sm">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-foreground">Interactive Chart</h2>
+          <select
+            value={selectedMetric}
+            onChange={(e) => setSelectedMetric(e.target.value as MetricKey)}
+            className="px-4 py-2 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm font-medium"
+          >
+            {METRICS.map(m => (
+              <option key={m.key} value={m.key}>{m.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="h-[400px] w-full mt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+              <XAxis 
+                dataKey="name" 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: '#6B7280', fontSize: 12, fontWeight: 500 }}
+                dy={10}
+              />
+              <YAxis 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: '#6B7280', fontSize: 12 }}
+                tickFormatter={(value) => {
+                  if (value >= 100000) return `${(value/100000).toFixed(1)}L`;
+                  if (value >= 1000) return `${(value/1000).toFixed(0)}k`;
+                  return value.toString();
+                }}
+              />
+              <Tooltip 
+                cursor={{ fill: 'transparent' }}
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-white border border-gray-200 p-3 rounded-lg shadow-lg">
+                        <p className="font-semibold text-gray-900">{data.fullName}</p>
+                        <p className="text-indigo-600 font-medium">
+                          {metricDef.label.split(' ')[0]}: {metricDef.format(data.value)}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Bar 
+                dataKey="value" 
+                radius={[6, 6, 0, 0]}
+                barSize={60}
+                animationDuration={1500}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={entry.value === maxValue ? '#4F46E5' : '#818CF8'} 
+                    className="transition-all duration-300 hover:opacity-80"
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
@@ -122,31 +148,47 @@ function PeerComparisonContent() {
         const byROE = [...banks].sort((a, b) => b.metrics.returnOnEquity - a.metrics.returnOnEquity);
         const byCap = [...banks].sort((a, b) => b.metrics.capitalRatio - a.metrics.capitalRatio);
         const byNPL = [...banks].sort((a, b) => b.metrics.nonPerformingLoansRatio - a.metrics.nonPerformingLoansRatio);
-        const topROE  = byROE[0];
-        const topCap  = byCap[0];
+        
+        const topROE = byROE[0];
+        const topCap = byCap[0];
         const highNPL = byNPL[0];
+        
         return (
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 space-y-3">
-            <h3 className="font-semibold text-foreground">Key Insights</h3>
-            <ul className="space-y-2 text-sm text-text-secondary list-disc list-inside">
+          <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 space-y-4">
+            <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Key Insights
+            </h3>
+            <ul className="space-y-3 text-sm text-text-secondary">
               {topROE && (
-                <li>
-                  {topROE.name} leads with highest ROE ({topROE.metrics.returnOnEquity}%) indicating superior profitability
+                <li className="flex items-start gap-2">
+                  <ArrowRight className="w-4 h-4 mt-0.5 text-primary/70 shrink-0" />
+                  <span>
+                    <strong className="text-foreground">{topROE.name}</strong> leads with the highest ROE ({topROE.metrics.returnOnEquity}%), indicating superior profitability.
+                  </span>
                 </li>
               )}
               {topCap && (
-                <li>
-                  {topCap.name} maintains strong capital position with {topCap.metrics.capitalRatio}% capital ratio
+                <li className="flex items-start gap-2">
+                  <ArrowRight className="w-4 h-4 mt-0.5 text-primary/70 shrink-0" />
+                  <span>
+                    <strong className="text-foreground">{topCap.name}</strong> maintains a strong capital position with a {topCap.metrics.capitalRatio}% capital ratio.
+                  </span>
                 </li>
               )}
               {highNPL && banks.length > 1 && (
-                <li>
-                  Monitor asset quality: {highNPL.name} has highest NPL ratio at{' '}
-                  {(highNPL.metrics.nonPerformingLoansRatio * 100).toFixed(2)}%
+                <li className="flex items-start gap-2">
+                  <ArrowRight className="w-4 h-4 mt-0.5 text-amber-600 shrink-0" />
+                  <span>
+                    Monitor asset quality: <strong className="text-foreground">{highNPL.name}</strong> has the highest NPA ratio at {highNPL.metrics.nonPerformingLoansRatio}%.
+                  </span>
                 </li>
               )}
               {banks.length < 2 && (
-                <li>Add more banks to the portfolio to see comparative insights</li>
+                <li className="flex items-start gap-2">
+                  <ArrowRight className="w-4 h-4 mt-0.5 text-primary/70 shrink-0" />
+                  <span>Add more banks to the portfolio to see comparative insights.</span>
+                </li>
               )}
             </ul>
           </div>

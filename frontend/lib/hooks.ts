@@ -3,7 +3,7 @@ import { Bank, BankMetrics, Client, CfoInsight, UserRecord, PortfolioEntry, Port
 
 // ── Shared utilities ──────────────────────────────────────────────────────────
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
 
 /** Read the JWT token from the browser cookie set at login. */
 function getAuthToken(): string {

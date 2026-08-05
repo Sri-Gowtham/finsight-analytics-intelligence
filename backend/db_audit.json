@@ -1,0 +1,2480 @@
+{
+  "companies": [
+    {
+      "company_id": 1,
+      "name": "HDFC Bank",
+      "ticker": "HDFCBANK",
+      "exchange": "NSE",
+      "sector": "Banking"
+    },
+    {
+      "company_id": 2,
+      "name": "ICICI Bank",
+      "ticker": "ICICIBANK",
+      "exchange": "NSE",
+      "sector": "Banking"
+    },
+    {
+      "company_id": 3,
+      "name": "State Bank of India",
+      "ticker": "SBIN",
+      "exchange": "NSE",
+      "sector": "Banking"
+    },
+    {
+      "company_id": 4,
+      "name": "Axis Bank",
+      "ticker": "AXISBANK",
+      "exchange": "NSE",
+      "sector": "Banking"
+    },
+    {
+      "company_id": 5,
+      "name": "Kotak Mahindra Bank",
+      "ticker": "KOTAKBANK",
+      "exchange": "NSE",
+      "sector": "Banking"
+    },
+    {
+      "company_id": 7,
+      "name": "TestBank_1785750968949",
+      "ticker": "TB_1785750968949",
+      "exchange": "NYSE",
+      "sector": "Financials"
+    },
+    {
+      "company_id": 8,
+      "name": "OtherBank_1785750968949",
+      "ticker": "OB_1785750968949",
+      "exchange": "NASDAQ",
+      "sector": "Financials"
+    }
+  ],
+  "metrics": [
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "TestBank_1785750968949",
+      "metric_name": "NIM",
+      "value": "3.5000"
+    },
+    {
+      "name": "TestBank_1785750968949",
+      "metric_name": "NIM",
+      "value": "3.8000"
+    },
+    {
+      "name": "TestBank_1785750968949",
+      "metric_name": "CAR",
+      "value": "15.2000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    },
+    {
+      "name": "HDFC Bank",
+      "metric_name": "NIM",
+      "value": "4.0000"
+    }
+  ]
+}

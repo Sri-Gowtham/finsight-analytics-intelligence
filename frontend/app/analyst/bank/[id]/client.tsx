@@ -63,14 +63,13 @@ export default function BankDetailClient({ bank }: { bank: Bank }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <MetricCard
             label="Total Assets"
-            value={(bank.metrics.totalAssets / 1000).toFixed(1)}
-            unit="B USD"
-            trend="up"
+            value={bank.metrics.totalAssets >= 100000 ? (bank.metrics.totalAssets / 100000).toFixed(2) + 'L' : bank.metrics.totalAssets.toLocaleString('en-IN')}
+            unit="₹ Cr"
           />
           <MetricCard
             label="Net Income"
-            value={(bank.metrics.netIncome / 1000).toFixed(1)}
-            unit="B USD"
+            value={bank.metrics.netIncome >= 100000 ? (bank.metrics.netIncome / 100000).toFixed(2) + 'L' : bank.metrics.netIncome.toLocaleString('en-IN')}
+            unit="₹ Cr"
             trend="up"
           />
           <MetricCard label="Capital Ratio" value={bank.metrics.capitalRatio} unit="%" />

@@ -66,7 +66,7 @@ export default function ExplorePage() {
                   <div>
                     <p className="text-xs text-text-tertiary">Assets</p>
                     <p className="font-semibold text-foreground">
-                      ${(bank.metrics.totalAssets / 1000).toFixed(1)}B
+                      ₹{bank.metrics.totalAssets >= 100000 ? (bank.metrics.totalAssets / 100000).toFixed(2) + 'L' : bank.metrics.totalAssets.toLocaleString('en-IN')} Cr
                     </p>
                   </div>
                   <div>

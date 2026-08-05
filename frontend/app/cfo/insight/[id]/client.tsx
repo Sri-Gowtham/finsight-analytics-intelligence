@@ -203,7 +203,7 @@ export default function InsightDetailClient({ insightId }: { insightId: string }
                 <Button
                   onClick={handleApprove}
                   disabled={approving}
-                  className="bg-success hover:bg-success/90 text-white"
+                  className="bg-cfo-gold hover:bg-cfo-gold/90 text-white"
                 >
                   {approving ? 'Approving...' : 'Approve'}
                 </Button>

@@ -43,6 +43,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-cfo-gold: var(--cfo-gold);
 }
 
 :root {
@@ -85,6 +86,7 @@
   --success-foreground: oklch(0.985 0 0);
   --info: #2563EB;
   --info-foreground: oklch(0.985 0 0);
+  --cfo-gold: #D6B25E;
 }
 
 .dark {

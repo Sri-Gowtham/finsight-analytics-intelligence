@@ -32,7 +32,7 @@ async function verifyJWT(token: string, secret: string): Promise<{ user_id: stri
 
     const tokenInput = `${headerB64}.${payloadB64}`;
     const sigBuf = base64UrlDecode(signatureB64);
-    const isValid = await crypto.subtle.verify('HMAC', key, sigBuf, enc.encode(tokenInput));
+    const isValid = await crypto.subtle.verify('HMAC', key, sigBuf as unknown as BufferSource, enc.encode(tokenInput) as unknown as BufferSource);
     if (!isValid) return null;
 
     const payloadStr = new TextDecoder().decode(base64UrlDecode(payloadB64));
@@ -65,8 +65,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Authenticated users should be redirected away from login to their dashboard
-  if (pathname === '/login') {
+  // Authenticated users should be redirected away from login or /dashboard to their specific role dashboard
+  if (pathname === '/login' || pathname === '/dashboard') {
     return NextResponse.redirect(new URL(getHomePathForRole(payload.role), request.url));
   }
 

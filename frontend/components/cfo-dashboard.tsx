@@ -47,7 +47,7 @@ export function CfoDashboard() {
                       {insight.insight_type}
                     </p>
                   </div>
-                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                  <span className="px-3 py-1 bg-cfo-gold/15 text-cfo-gold rounded-full text-xs font-semibold">
                     Pending
                   </span>
                 </div>
