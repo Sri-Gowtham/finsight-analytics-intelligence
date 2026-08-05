@@ -12,7 +12,7 @@ export default function ExplorePage() {
 
   return (
     <RoleGuard allowedRoles={['analyst']}>
-      <div className="p-8 space-y-8 max-w-7xl mx-auto">
+      <div className="w-full space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Explore Banks</h1>

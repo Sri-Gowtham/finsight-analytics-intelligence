@@ -7,7 +7,7 @@ import { Globe, Users, Calendar, Link as LinkIcon } from 'lucide-react';
 
 export default function BankDetailClient({ bank }: { bank: Bank }) {
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="w-full space-y-8">
       {/* Header */}
       <div className="space-y-4">
         <div className="flex items-start justify-between">

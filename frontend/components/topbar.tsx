@@ -31,12 +31,22 @@ export function Topbar() {
         {/* User menu */}
         <div className="flex items-center gap-3 pl-6 border-l border-border">
           <div className="text-right">
-            <p className="text-sm font-medium text-foreground">{user?.name}</p>
-            <p className="text-xs text-text-tertiary">
-              {user?.role === 'cfo' ? 'CFO' : user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ''}
-            </p>
+            <p className="text-sm font-medium text-foreground mb-0.5">{user?.name}</p>
+            {user?.role?.toLowerCase() === 'cfo' ? (
+              <span className="inline-block px-2 py-0.5 bg-cfo-gold/20 text-cfo-gold font-bold text-[11px] rounded border border-cfo-gold/40 uppercase tracking-wider shadow-2xs">
+                CFO
+              </span>
+            ) : (
+              <p className="text-xs font-medium text-text-tertiary">
+                {user?.role?.toLowerCase() === 'admin' ? 'Admin' : user?.role ? 'Analyst' : ''}
+              </p>
+            )}
           </div>
-          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-lg">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all ${
+            user?.role?.toLowerCase() === 'cfo'
+              ? 'bg-cfo-gold/20 text-cfo-gold border border-cfo-gold/40 font-semibold'
+              : 'bg-primary/10 text-primary'
+          }`}>
             {user?.avatar}
           </div>
         </div>

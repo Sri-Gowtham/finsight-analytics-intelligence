@@ -14,7 +14,7 @@ export function AdminDashboard() {
   const totalUsers = users?.length || 0;
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
+    <div className="w-full space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">System Health</h1>

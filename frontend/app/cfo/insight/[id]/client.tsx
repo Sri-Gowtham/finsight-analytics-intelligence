@@ -36,64 +36,71 @@ export default function InsightDetailClient({ insightId }: { insightId: string }
 
   return (
     <RoleGuard allowedRoles={['cfo']}>
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="w-full space-y-6">
         {/* Header */}
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-primary hover:text-primary/90 mb-6 font-medium"
+          className="inline-flex items-center gap-2 text-cfo-gold hover:text-cfo-gold/80 mb-4 font-semibold"
         >
           <ChevronLeft className="w-4 h-4" />
           Back to Dashboard
         </Link>
 
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="space-y-4 w-full">
             <div className="h-8 bg-surface rounded animate-pulse w-1/3" />
-            <div className="h-32 bg-surface rounded animate-pulse" />
+            <div className="h-32 bg-surface rounded animate-pulse w-full" />
           </div>
         ) : error || !insight ? (
-          <div className="text-center py-12">
+          <div className="text-center py-12 border border-border rounded-lg bg-surface w-full">
             <p className="text-text-secondary">Insight not found</p>
           </div>
         ) : insight.approval_status === 'approved' ? (
-          <div className="bg-background border border-border rounded-lg p-8 space-y-6">
-            <div className="flex items-start gap-4">
-              <CheckCircle className="w-6 h-6 text-success flex-shrink-0 mt-1" />
-              <div>
-                <h1 className="text-2xl font-bold text-foreground mb-2">
-                  {insight.company_name} ({insight.ticker})
-                </h1>
-                <p className="text-sm text-text-secondary">
-                  Approved on {insight.approved_at ? new Date(insight.approved_at).toLocaleDateString() : '—'}
-                </p>
+          <div className="bg-background border border-cfo-gold/40 rounded-xl p-8 space-y-6 w-full shadow-xs">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <CheckCircle className="w-7 h-7 text-cfo-gold flex-shrink-0 mt-0.5" />
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground mb-1">
+                    {insight.company_name} (<span className="font-mono text-cfo-gold">{insight.ticker}</span>)
+                  </h1>
+                  <p className="text-sm text-text-secondary">
+                    Approved on {insight.approved_at ? new Date(insight.approved_at).toLocaleDateString() : '—'}
+                  </p>
+                </div>
               </div>
+              <span className="px-3.5 py-1.5 bg-cfo-gold/20 text-cfo-gold border border-cfo-gold/50 rounded-full text-xs font-bold uppercase tracking-wider shadow-2xs">
+                Approved
+              </span>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4 pt-4 border-t border-border">
               <div>
-                <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-2">
+                <h2 className="text-xs font-bold text-text-tertiary uppercase tracking-wider mb-1">
                   Insight Type
                 </h2>
-                <p className="text-foreground font-medium">{insight.insight_type}</p>
+                <p className="text-foreground font-semibold text-lg">{insight.insight_type}</p>
               </div>
 
               <div>
-                <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-2">
+                <h2 className="text-xs font-bold text-text-tertiary uppercase tracking-wider mb-2">
                   Summary
                 </h2>
-                <p className="text-foreground leading-relaxed">{insight.generated_text}</p>
+                <div className="p-5 bg-cfo-gold/5 border border-cfo-gold/20 rounded-lg">
+                  <p className="text-foreground leading-relaxed text-base">{insight.generated_text}</p>
+                </div>
               </div>
 
               {insight.metric_types && insight.metric_types.length > 0 && (
                 <div>
-                  <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-2">
+                  <h2 className="text-xs font-bold text-text-tertiary uppercase tracking-wider mb-2">
                     Analysis Based On
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {insight.metric_types.map((metric) => (
                       <span
                         key={metric}
-                        className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                        className="px-3 py-1 bg-cfo-gold/15 text-cfo-gold border border-cfo-gold/30 rounded-full text-sm font-medium"
                       >
                         {metric}
                       </span>
@@ -103,83 +110,93 @@ export default function InsightDetailClient({ insightId }: { insightId: string }
               )}
             </div>
 
-            <div className="pt-4 border-t border-border text-center text-sm text-text-secondary">
-              This insight has been approved and published.
+            <div className="pt-4 border-t border-border text-center text-sm text-cfo-gold font-medium">
+              ✓ This insight has been executive-approved and published to records.
             </div>
           </div>
         ) : insight.approval_status === 'rejected' ? (
-          <div className="bg-background border border-border rounded-lg p-8 space-y-6">
-            <div className="flex items-start gap-4">
-              <XCircle className="w-6 h-6 text-error flex-shrink-0 mt-1" />
-              <div>
-                <h1 className="text-2xl font-bold text-foreground mb-2">
-                  {insight.company_name} ({insight.ticker})
-                </h1>
-                <p className="text-sm text-text-secondary">
-                  Rejected on {insight.rejected_at ? new Date(insight.rejected_at).toLocaleDateString() : '—'}
-                </p>
+          <div className="bg-background border border-border rounded-xl p-8 space-y-6 w-full">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <XCircle className="w-7 h-7 text-destructive flex-shrink-0 mt-0.5" />
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground mb-1">
+                    {insight.company_name} (<span className="font-mono text-destructive">{insight.ticker}</span>)
+                  </h1>
+                  <p className="text-sm text-text-secondary">
+                    Rejected on {insight.rejected_at ? new Date(insight.rejected_at).toLocaleDateString() : '—'}
+                  </p>
+                </div>
               </div>
+              <span className="px-3.5 py-1.5 bg-destructive/15 text-destructive border border-destructive/30 rounded-full text-xs font-bold uppercase tracking-wider">
+                Rejected
+              </span>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4 pt-4 border-t border-border">
               <div>
-                <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-2">
+                <h2 className="text-xs font-bold text-text-tertiary uppercase tracking-wider mb-1">
                   Insight Type
                 </h2>
-                <p className="text-foreground font-medium">{insight.insight_type}</p>
+                <p className="text-foreground font-semibold text-lg">{insight.insight_type}</p>
               </div>
 
               <div>
-                <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-2">
+                <h2 className="text-xs font-bold text-text-tertiary uppercase tracking-wider mb-2">
                   Summary
                 </h2>
-                <p className="text-foreground leading-relaxed">{insight.generated_text}</p>
+                <p className="text-foreground leading-relaxed text-base">{insight.generated_text}</p>
               </div>
 
               {insight.rejection_reason && (
-                <div className="p-4 bg-error/5 border border-error/20 rounded-lg">
-                  <h3 className="font-semibold text-sm text-error mb-1">Rejection Reason</h3>
+                <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
+                  <h3 className="font-semibold text-sm text-destructive mb-1">Rejection Reason</h3>
                   <p className="text-sm text-foreground">{insight.rejection_reason}</p>
                 </div>
               )}
             </div>
 
-            <div className="pt-4 border-t border-border text-center text-sm text-text-secondary">
-              This insight has been rejected.
+            <div className="pt-4 border-t border-border text-center text-sm text-text-secondary font-medium">
+              This insight was rejected and suppressed from publication.
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-6 w-full">
             {/* Insight Card */}
-            <div className="bg-background border border-border rounded-lg p-8 space-y-6">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground mb-2">
-                  {insight.company_name}
-                </h1>
-                <div className="flex items-center gap-3 text-lg">
-                  <span className="font-mono font-bold text-primary">{insight.ticker}</span>
-                  <span className="text-lg font-semibold text-foreground">{insight.insight_type}</span>
+            <div className="bg-background border border-border rounded-xl p-8 space-y-6 w-full shadow-xs">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground mb-2">
+                    {insight.company_name}
+                  </h1>
+                  <div className="flex items-center gap-3 text-lg">
+                    <span className="font-mono font-bold text-cfo-gold">{insight.ticker}</span>
+                    <span className="text-lg font-semibold text-foreground">{insight.insight_type}</span>
+                  </div>
                 </div>
+                <span className="px-3.5 py-1.5 bg-cfo-gold/20 text-cfo-gold border border-cfo-gold/50 rounded-full text-xs font-bold uppercase tracking-wider shadow-2xs">
+                  Pending Review
+                </span>
               </div>
 
-              <div className="space-y-3">
-                <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">
+              <div className="space-y-3 pt-4 border-t border-border">
+                <h2 className="text-xs font-bold text-text-tertiary uppercase tracking-wider">
                   AI Generated Summary
                 </h2>
-                <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                  <p className="text-foreground leading-relaxed text-base">{insight.generated_text}</p>
+                <div className="p-5 bg-cfo-gold/5 border border-cfo-gold/30 rounded-lg">
+                  <p className="text-foreground leading-relaxed text-base font-medium">{insight.generated_text}</p>
                 </div>
               </div>
 
               {insight.metric_types && insight.metric_types.length > 0 && (
-                <div className="p-4 bg-surface border border-border rounded-lg">
-                  <h3 className="font-semibold text-foreground mb-3">Show Basis</h3>
-                  <p className="text-sm text-text-secondary mb-3">Based on analysis of:</p>
+                <div className="p-5 bg-surface border border-border rounded-lg">
+                  <h3 className="font-semibold text-foreground mb-2">Basis of Evaluation</h3>
+                  <p className="text-sm text-text-secondary mb-3">Based on verified audit analysis of:</p>
                   <div className="flex flex-wrap gap-2">
                     {insight.metric_types.map((metric) => (
                       <span
                         key={metric}
-                        className="px-3 py-1 bg-background border border-border rounded-full text-sm text-foreground font-medium"
+                        className="px-3 py-1 bg-cfo-gold/15 text-cfo-gold border border-cfo-gold/30 rounded-full text-sm font-semibold"
                       >
                         {metric}
                       </span>

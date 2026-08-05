@@ -28,23 +28,32 @@ const adminNavItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { logout, user } = useAuth();
+  const roleLower = user?.role?.toLowerCase();
   let navItems = analystNavItems;
-  if (user?.role === 'cfo') navItems = cfoNavItems;
-  else if (user?.role === 'admin') navItems = adminNavItems;
+  if (roleLower === 'cfo') navItems = cfoNavItems;
+  else if (roleLower === 'admin') navItems = adminNavItems;
 
   return (
     <aside className="w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col h-full">
       {/* Logo and Role Badge */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center text-white font-bold text-sm">
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm ${
+            roleLower === 'cfo' ? 'bg-cfo-gold text-white font-extrabold shadow-xs' : 'bg-sidebar-primary'
+          }`}>
             FS
           </div>
           <span className="font-bold text-lg">FinSight</span>
         </div>
         {user && (
-          <div className="text-xs font-semibold px-2 py-1 rounded bg-sidebar-accent text-sidebar-accent-foreground w-fit uppercase tracking-wide">
-            {user.role === 'cfo' ? '👔 CFO' : user.role === 'admin' ? '⚙️ Admin' : '📊 Analyst'}
+          <div className={`text-xs font-semibold px-2.5 py-1 rounded w-fit uppercase tracking-wide border transition-all ${
+            roleLower === 'cfo'
+              ? 'bg-cfo-gold/20 text-cfo-gold border-cfo-gold/50 font-bold shadow-2xs'
+              : roleLower === 'admin'
+              ? 'bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-border'
+              : 'bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-border'
+          }`}>
+            {roleLower === 'cfo' ? '👔 CFO' : roleLower === 'admin' ? '⚙️ Admin' : '📊 Analyst'}
           </div>
         )}
       </div>
@@ -60,12 +69,14 @@ export function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive
-                  ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                  : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
+                  ? roleLower === 'cfo'
+                    ? 'bg-cfo-gold/15 text-cfo-gold font-bold border-l-4 border-cfo-gold'
+                    : 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent/50 font-medium'
               }`}
             >
               <Icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
+              <span>{item.label}</span>
             </Link>
           );
         })}

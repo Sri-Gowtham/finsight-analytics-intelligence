@@ -13,7 +13,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="w-full">
       {user?.role === 'cfo' ? <CfoDashboard /> : <AnalystDashboard />}
     </div>
   );

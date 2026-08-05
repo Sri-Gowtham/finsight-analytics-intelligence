@@ -34,6 +34,9 @@ export default async function globalSetup() {
   await pool.query(`ALTER TABLE insights ADD COLUMN IF NOT EXISTS rejected_at      TIMESTAMP`);
   await pool.query(`ALTER TABLE insights ADD COLUMN IF NOT EXISTS rejection_reason TEXT`);
   await pool.query(`ALTER TABLE insights ADD COLUMN IF NOT EXISTS reviewed_by      INT REFERENCES users(user_id)`);
+  await pool.query(`ALTER TABLE insights ADD COLUMN IF NOT EXISTS source_metric_ids VARCHAR(255)`);
+  await pool.query(`ALTER TABLE insights ADD COLUMN IF NOT EXISTS insight_type     VARCHAR(100)`);
+  await pool.query(`ALTER TABLE insights ADD COLUMN IF NOT EXISTS created_at       TIMESTAMP DEFAULT NOW()`);
 
   await pool.end();
 }

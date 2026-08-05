@@ -53,7 +53,7 @@ export function InsightCard({ insight }: { insight: Insight }) {
   const Icon = config.Icon;
 
   return (
-    <div className={`p-4 rounded-lg border ${config.bg} ${config.border} space-y-2`}>
+    <div className={`p-4 rounded-lg border shadow-card ${config.bg} ${config.border} space-y-2`}>
       <div className="flex items-start gap-3">
         <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${config.icon}`} />
         <div className="flex-1">
@@ -94,7 +94,7 @@ export function MetricCard({
   const TrendIcon = config?.icon;
 
   return (
-    <div className="bg-background border border-border rounded-lg p-4 space-y-2">
+    <div className="bg-card border border-border rounded-lg shadow-card p-4 space-y-2">
       <p className="text-sm text-text-secondary">{label}</p>
       <div className="flex items-end justify-between">
         <div>
@@ -125,7 +125,7 @@ export function ExpandableSection({
   const [isOpen, setIsOpen] = require('react').useState(defaultOpen);
 
   return (
-    <div className="border border-border rounded-lg">
+    <div className="bg-card border border-border rounded-lg shadow-card">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-4 py-3 hover:bg-surface transition-colors"

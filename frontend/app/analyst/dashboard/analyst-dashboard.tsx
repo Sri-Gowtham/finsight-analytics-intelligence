@@ -14,8 +14,8 @@ export function AnalystDashboard() {
   const peerClients = clients.filter((c) => c.role === 'peer');
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Header */}
+    <div className="w-full space-y-8">
+      {/* Welcome Banner */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
         <p className="text-text-secondary mt-1">Monitor your tracked banks and insights</p>
@@ -77,7 +77,7 @@ function FocusClientSection({
   if (!bank) return null;
 
   return (
-    <div className="bg-background border border-border rounded-xl overflow-hidden">
+    <div className="bg-card border border-border rounded-xl shadow-card overflow-hidden">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full p-6 flex items-center justify-between hover:bg-surface transition-colors"
@@ -172,7 +172,7 @@ function PeerClientCard({
   if (!bank) return null;
 
   return (
-    <div className="bg-background border border-border rounded-lg overflow-hidden">
+    <div className="bg-card border border-border rounded-lg shadow-card overflow-hidden">
       <button
         onClick={() => onToggleExpand(clientId)}
         className="w-full p-4 flex items-center justify-between hover:bg-surface transition-colors"

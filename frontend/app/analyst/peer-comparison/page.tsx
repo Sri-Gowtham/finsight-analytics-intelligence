@@ -9,7 +9,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 type MetricKey = 'totalAssets' | 'netIncome' | 'capitalRatio' | 'returnOnAssets' | 'returnOnEquity' | 'costToIncomeRatio' | 'loanToDepositRatio' | 'nonPerformingLoansRatio';
 
-const METRICS: { key: MetricKey; label: string; format: (v: number) => string } = [
+const METRICS: { key: MetricKey; label: string; format: (v: number) => string }[] = [
   { key: 'totalAssets', label: 'Total Assets (₹ Cr)', format: (v: number) => `₹${v.toLocaleString('en-IN')}` },
   { key: 'netIncome', label: 'Net Income (₹ Cr)', format: (v: number) => `₹${v.toLocaleString('en-IN')}` },
   { key: 'capitalRatio', label: 'Capital Ratio (%)', format: (v: number) => `${v.toFixed(2)}%` },
@@ -59,7 +59,7 @@ function PeerComparisonContent() {
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="w-full space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
