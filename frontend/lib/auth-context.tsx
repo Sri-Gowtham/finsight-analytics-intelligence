@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from './types';
-import { MOCK_USERS } from './mock-data';
 
 interface AuthContextType {
   user: User | null;
@@ -13,6 +12,20 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+
+function decodeJWT(token: string): any {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payloadB64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payloadStr = atob(payloadB64);
+    return JSON.parse(payloadStr);
+  } catch (e) {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,13 +33,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Check for stored session on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('finsight-user');
-      if (stored) {
-        try {
-          setUser(JSON.parse(stored));
-        } catch (err) {
-          localStorage.removeItem('finsight-user');
+      const getCookie = (name: string): string | undefined => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift();
+      };
+      
+      const token = getCookie('token');
+      if (token) {
+        const stored = localStorage.getItem('finsight-user');
+        const payload = decodeJWT(token);
+        
+        if (stored) {
+          try {
+            setUser(JSON.parse(stored));
+          } catch (err) {
+            localStorage.removeItem('finsight-user');
+          }
+        } else if (payload) {
+          // Gracefully fallback to decoding from JWT if localStorage was cleared
+          setUser({
+            id: String(payload.user_id),
+            name: payload.name || (payload.role === 'Admin' ? 'Admin User' : payload.role === 'CFO' ? 'CFO User' : 'Analyst User'),
+            email: payload.email || '',
+            role: payload.role.toLowerCase() as any,
+            avatar: payload.role === 'CFO' ? '👔' : payload.role === 'Admin' ? '⚙️' : '📊'
+          });
         }
+      } else {
+        localStorage.removeItem('finsight-user');
+        setUser(null);
       }
     }
     setIsLoading(false);
@@ -35,21 +71,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      const matchedUser = MOCK_USERS.find(
-        (u) => u.email === email && u.password === password
-      );
-      
-      if (matchedUser) {
-        const { password: _, ...userWithoutPassword } = matchedUser;
-        setUser(userWithoutPassword);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('finsight-user', JSON.stringify(userWithoutPassword));
-        }
-      } else {
-        throw new Error('Invalid email or password');
+
+      const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid email or password');
+      }
+
+      const { token, user: backendUser } = data;
+
+      // Construct frontend user object with lowercase role matching our type definitions
+      const frontendUser: User = {
+        id: String(backendUser.user_id),
+        name: backendUser.name,
+        email: backendUser.email,
+        role: backendUser.role.toLowerCase() as any,
+        avatar: backendUser.role === 'CFO' ? '👔' : backendUser.role === 'Admin' ? '⚙️' : '📊'
+      };
+
+      setUser(frontendUser);
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('finsight-user', JSON.stringify(frontendUser));
+        // Set cookie read by Next.js middleware
+        document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
       }
     } finally {
       setIsLoading(false);
@@ -58,9 +111,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    // Clear localStorage
+    // Clear localStorage & cookies
     if (typeof window !== 'undefined') {
       localStorage.removeItem('finsight-user');
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
     }
   };
 

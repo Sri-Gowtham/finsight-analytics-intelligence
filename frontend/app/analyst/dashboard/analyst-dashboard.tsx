@@ -84,7 +84,7 @@ function FocusClientSection({
       >
         <div className="text-left">
           <h2 className="text-xl font-bold text-foreground">{bank.name}</h2>
-          <p className="text-sm text-text-secondary">Focus Client • {bank.country}</p>
+          <p className="text-sm text-text-secondary">Focus Client • {bank.country || bank.ticker}</p>
         </div>
         {isExpanded ? (
           <ChevronUp className="w-6 h-6 text-text-secondary" />
@@ -179,7 +179,7 @@ function PeerClientCard({
       >
         <div className="text-left">
           <p className="font-semibold text-foreground">{bank.name}</p>
-          <p className="text-sm text-text-secondary">{bank.country}</p>
+          <p className="text-sm text-text-secondary">{bank.country || bank.ticker}</p>
         </div>
         {isExpanded ? (
           <ChevronUp className="w-5 h-5 text-text-secondary" />

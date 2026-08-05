@@ -49,9 +49,69 @@ export async function createUser(req, res, next) {
 export async function listUsers(_req, res, next) {
   try {
     const { rows } = await pool.query(
-      'SELECT user_id, name, email, role FROM users ORDER BY user_id',
+      'SELECT user_id, name, email, role, is_active FROM users ORDER BY user_id',
     );
     return res.json({ users: rows });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * PATCH /api/admin/users/:id
+ * Body: { is_active: boolean }
+ * Toggles a user's active status. No hard delete — preserves audit history.
+ * Admin-only.
+ */
+export async function deactivateUser(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { is_active } = req.body;
+
+    if (typeof is_active !== 'boolean') {
+      return res.status(400).json({ error: 'is_active must be a boolean' });
+    }
+
+    // Verify user exists
+    const existing = await pool.query(
+      'SELECT user_id FROM users WHERE user_id = $1',
+      [id],
+    );
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { rows } = await pool.query(
+      `UPDATE users SET is_active = $1 WHERE user_id = $2
+       RETURNING user_id, name, email, role, is_active`,
+      [is_active, id],
+    );
+
+    return res.json({ success: true, user: rows[0] });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/admin/portfolios
+ * Returns all client_portfolio rows joined with company name. Admin-only.
+ */
+export async function listPortfolios(_req, res, next) {
+  try {
+    const { rows } = await pool.query(
+      `SELECT
+         cp.id,
+         cp.client_name,
+         cp.company_id,
+         c.name   AS company_name,
+         c.ticker,
+         cp.uploaded_by
+       FROM client_portfolios cp
+       JOIN companies c ON c.company_id = cp.company_id
+       ORDER BY cp.client_name, c.name`,
+    );
+    return res.json({ portfolios: rows });
   } catch (err) {
     next(err);
   }

@@ -117,23 +117,41 @@ function PeerComparisonContent() {
         </div>
       </div>
 
-      {/* Analysis */}
-      <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 space-y-3">
-        <h3 className="font-semibold text-foreground">Key Insights</h3>
-        <ul className="space-y-2 text-sm text-text-secondary list-disc list-inside">
-          <li>Asia Pacific Bank leads with highest ROE (10.8%) indicating superior profitability</li>
-          <li>
-            Global Finance Corp maintains strong capital position with 14.2% capital ratio
-          </li>
-          <li>
-            European Banking Group shows efficient operations with lowest cost-to-income ratio
-            (62%)
-          </li>
-          <li>
-            Monitor asset quality: Global Finance Corp has highest NPL ratio at 0.85%
-          </li>
-        </ul>
-      </div>
+      {/* Analysis — derived from real data */}
+      {banks.length > 0 && (() => {
+        const byROE = [...banks].sort((a, b) => b.metrics.returnOnEquity - a.metrics.returnOnEquity);
+        const byCap = [...banks].sort((a, b) => b.metrics.capitalRatio - a.metrics.capitalRatio);
+        const byNPL = [...banks].sort((a, b) => b.metrics.nonPerformingLoansRatio - a.metrics.nonPerformingLoansRatio);
+        const topROE  = byROE[0];
+        const topCap  = byCap[0];
+        const highNPL = byNPL[0];
+        return (
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 space-y-3">
+            <h3 className="font-semibold text-foreground">Key Insights</h3>
+            <ul className="space-y-2 text-sm text-text-secondary list-disc list-inside">
+              {topROE && (
+                <li>
+                  {topROE.name} leads with highest ROE ({topROE.metrics.returnOnEquity}%) indicating superior profitability
+                </li>
+              )}
+              {topCap && (
+                <li>
+                  {topCap.name} maintains strong capital position with {topCap.metrics.capitalRatio}% capital ratio
+                </li>
+              )}
+              {highNPL && banks.length > 1 && (
+                <li>
+                  Monitor asset quality: {highNPL.name} has highest NPL ratio at{' '}
+                  {(highNPL.metrics.nonPerformingLoansRatio * 100).toFixed(2)}%
+                </li>
+              )}
+              {banks.length < 2 && (
+                <li>Add more banks to the portfolio to see comparative insights</li>
+              )}
+            </ul>
+          </div>
+        );
+      })()}
     </div>
   );
 }

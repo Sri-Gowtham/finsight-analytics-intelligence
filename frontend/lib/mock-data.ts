@@ -1,45 +1,7 @@
 import { User, Bank, Client, Scenario, CfoInsight, PortfolioEntry, DataSourceSettings } from './types';
 
-export const MOCK_USERS: (User & { password: string; is_active: boolean })[] = [
-  {
-    id: '1',
-    name: 'Riya Sharma',
-    email: 'analyst@finsight.demo',
-    password: 'demo1234',
-    role: 'analyst',
-    avatar: '👩‍💼',
-    is_active: true,
-  },
-  {
-    id: '2',
-    name: 'Arjun Mehta',
-    email: 'cfo@finsight.demo',
-    password: 'demo1234',
-    role: 'cfo',
-    avatar: '👨‍💼',
-    is_active: true,
-  },
-  {
-    id: '3',
-    name: 'Vikram Patel',
-    email: 'analyst2@finsight.demo',
-    password: 'demo1234',
-    role: 'analyst',
-    avatar: '👨‍💻',
-    is_active: true,
-  },
-  {
-    id: '4',
-    name: 'Priya Nair',
-    email: 'admin@finsight.demo',
-    password: 'demo1234',
-    role: 'admin',
-    avatar: '👩‍💻',
-    is_active: true,
-  },
-];
-
-export const mockUser: User = MOCK_USERS[0];
+export const MOCK_USERS: any[] = [];
+export const mockUser: any = null;
 
 export const mockBanks: Bank[] = [
   {

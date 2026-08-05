@@ -2,28 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, TrendingUp, Zap, Clock, Settings, LogOut, CheckCircle, Users, Database } from 'lucide-react';
+import { Home, Compass, TrendingUp, Zap, Settings, LogOut, CheckCircle, Users, Database } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 const analystNavItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/explore', label: 'Explore Banks', icon: Compass },
-  { href: '/peer-comparison', label: 'Peer Analysis', icon: TrendingUp },
-  { href: '/what-if', label: 'What-If Scenarios', icon: Zap },
+  { href: '/analyst/dashboard', label: 'Dashboard', icon: Home },
+  { href: '/analyst/explore', label: 'Explore Banks', icon: Compass },
+  { href: '/analyst/peer-comparison', label: 'Peer Analysis', icon: TrendingUp },
+  { href: '/analyst/what-if', label: 'What-If Scenarios', icon: Zap },
   { href: '/account', label: 'Account', icon: Settings },
 ];
 
 const cfoNavItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/approved', label: 'Approved History', icon: CheckCircle },
+  { href: '/cfo/dashboard', label: 'Dashboard', icon: Home },
+  { href: '/cfo/approved', label: 'Approved History', icon: CheckCircle },
   { href: '/account', label: 'Account', icon: Settings },
 ];
 
 const adminNavItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/users', label: 'Users', icon: Users },
-  { href: '/portfolios', label: 'Portfolios', icon: Database },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/portfolios', label: 'Portfolios', icon: Database },
   { href: '/account', label: 'Account', icon: Settings },
 ];
 
