@@ -16,8 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAuth } from "@/lib/auth-context";
-import { DEMO_PASSWORD } from "@/lib/mock-data";
+import { useAuth, HOME_FOR_ROLE } from "@/lib/auth-context";
+import { DEMO_PASSWORD } from "@/lib/api";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -48,9 +48,9 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const DEMO_ACCOUNTS = [
-  { role: "Analyst", email: "analyst@finsight.in", name: "Ananya Rao" },
-  { role: "CFO", email: "cfo@finsight.in", name: "Rajiv Menon" },
-  { role: "Admin", email: "admin@finsight.in", name: "Priya Sharma" },
+  { role: "Analyst", email: "analyst@finsight.demo", name: "Analyst User" },
+  { role: "CFO", email: "cfo@finsight.demo", name: "CFO User" },
+  { role: "Admin", email: "admin@finsight.demo", name: "Admin User" },
 ];
 
 function LoginPage() {
@@ -72,7 +72,7 @@ function LoginPage() {
     try {
       const signed = await signIn(values.email, values.password);
       toast.success(`Welcome back, ${signed.name.split(" ")[0]}`);
-      navigate({ to: "/dashboard", replace: true });
+      navigate({ to: HOME_FOR_ROLE[signed.role] ?? "/dashboard", replace: true });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Sign in failed.");
     }

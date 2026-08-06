@@ -25,13 +25,13 @@ import heroImage from "@/assets/finsight-hero.jpg";
 export const Route = createFileRoute("/")(  {
     head: () => ({
       meta: [
-        { title: "FinSight — AI Financial Intelligence for NSE-Listed Banks" },
+        { title: "FinSight â€” AI Financial Intelligence for NSE-Listed Banks" },
         {
           name: "description",
           content:
             "FinSight gives consultancy and advisory firms auditable AI insights on NSE-listed Indian banks: peer comparison, historical replay, what-if scenarios and CFO approval workflows.",
         },
-        { property: "og:title", content: "FinSight — AI Financial Intelligence Platform" },
+        { property: "og:title", content: "FinSight â€” AI Financial Intelligence Platform" },
         {
           property: "og:description",
           content:
@@ -357,7 +357,7 @@ function Landing() {
               role: "CFO",
               tone: "border-cfo/50",
               points: [
-                "Executive summaries only — no raw metrics",
+                "Executive summaries only â€” no raw metrics",
                 "Show Basis in plain business language",
                 "Approve or reject with a recorded note",
               ],
@@ -368,7 +368,7 @@ function Landing() {
               points: [
                 "Provision users and assign roles",
                 "Manage client portfolios and mandates",
-                "Configure data sources — no insight access",
+                "Configure data sources â€” no insight access",
               ],
             },
           ].map((card) => (

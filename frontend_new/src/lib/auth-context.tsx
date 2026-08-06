@@ -60,6 +60,6 @@ export function useAuth() {
 
 export const HOME_FOR_ROLE: Record<Role, string> = {
   analyst: "/dashboard",
-  cfo: "/dashboard",
-  admin: "/dashboard",
+  cfo: "/approvals",
+  admin: "/admin",
 };
