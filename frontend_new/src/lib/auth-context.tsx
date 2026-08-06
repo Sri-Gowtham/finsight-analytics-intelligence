@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import * as api from "./api";
 import type { Role, User } from "./types";
@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
   const qc = useQueryClient();
 
   useEffect(() => {
@@ -41,8 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     qc.clear();
     await api.logout();
     setUser(null);
-    navigate({ to: "/login", replace: true });
-  }, [navigate, qc]);
+    router.navigate({ to: "/login", replace: true });
+  }, [router, qc]);
 
   const value = useMemo<AuthContextValue>(
     () => ({ user, role: user?.role ?? null, ready, signIn, signOut, refresh }),
