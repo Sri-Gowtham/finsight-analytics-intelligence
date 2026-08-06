@@ -25,6 +25,7 @@ import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as SignupAdminRouteImport } from './routes/signup/admin'
 import { Route as AppAdminClientsRouteImport } from './routes/_app/admin/clients'
 import { Route as AppAdminDataSourcesRouteImport } from './routes/_app/admin/data-sources'
+import { Route as AppAdminPortfoliosRouteImport } from './routes/_app/admin/portfolios'
 import { Route as AppAdminUsersRouteImport } from './routes/_app/admin/users'
 import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/index'
 import { Route as AppApprovalsInsightIdRouteImport } from './routes/_app/approvals/$insightId'
@@ -112,6 +113,11 @@ const AppAdminDataSourcesRoute = AppAdminDataSourcesRouteImport.update({
   path: '/admin/data-sources',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminPortfoliosRoute = AppAdminPortfoliosRouteImport.update({
+  id: '/admin/portfolios',
+  path: '/admin/portfolios',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminUsersRoute = AppAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/signup/admin': typeof SignupAdminRoute
   '/admin/clients': typeof AppAdminClientsRoute
   '/admin/data-sources': typeof AppAdminDataSourcesRoute
+  '/admin/portfolios': typeof AppAdminPortfoliosRoute
   '/admin/users': typeof AppAdminUsersRoute
   '/approvals/$insightId': typeof AppApprovalsInsightIdRoute
   '/approvals/history': typeof AppApprovalsHistoryRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/signup/admin': typeof SignupAdminRoute
   '/admin/clients': typeof AppAdminClientsRoute
   '/admin/data-sources': typeof AppAdminDataSourcesRoute
+  '/admin/portfolios': typeof AppAdminPortfoliosRoute
   '/admin/users': typeof AppAdminUsersRoute
   '/approvals/$insightId': typeof AppApprovalsInsightIdRoute
   '/approvals/history': typeof AppApprovalsHistoryRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/signup/admin': typeof SignupAdminRoute
   '/_app/admin/clients': typeof AppAdminClientsRoute
   '/_app/admin/data-sources': typeof AppAdminDataSourcesRoute
+  '/_app/admin/portfolios': typeof AppAdminPortfoliosRoute
   '/_app/admin/users': typeof AppAdminUsersRoute
   '/_app/approvals/$insightId': typeof AppApprovalsInsightIdRoute
   '/_app/approvals/history': typeof AppApprovalsHistoryRoute
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/signup/admin'
     | '/admin/clients'
     | '/admin/data-sources'
+    | '/admin/portfolios'
     | '/admin/users'
     | '/approvals/$insightId'
     | '/approvals/history'
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/signup/admin'
     | '/admin/clients'
     | '/admin/data-sources'
+    | '/admin/portfolios'
     | '/admin/users'
     | '/approvals/$insightId'
     | '/approvals/history'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/signup/admin'
     | '/_app/admin/clients'
     | '/_app/admin/data-sources'
+    | '/_app/admin/portfolios'
     | '/_app/admin/users'
     | '/_app/approvals/$insightId'
     | '/_app/approvals/history'
@@ -424,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDataSourcesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/portfolios': {
+      id: '/_app/admin/portfolios'
+      path: '/admin/portfolios'
+      fullPath: '/admin/portfolios'
+      preLoaderRoute: typeof AppAdminPortfoliosRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/admin/users': {
       id: '/_app/admin/users'
       path: '/admin/users'
@@ -484,6 +503,7 @@ interface AppRouteChildren {
   AppReplayRoute: typeof AppReplayRoute
   AppAdminClientsRoute: typeof AppAdminClientsRoute
   AppAdminDataSourcesRoute: typeof AppAdminDataSourcesRoute
+  AppAdminPortfoliosRoute: typeof AppAdminPortfoliosRoute
   AppAdminUsersRoute: typeof AppAdminUsersRoute
   AppApprovalsInsightIdRoute: typeof AppApprovalsInsightIdRoute
   AppApprovalsHistoryRoute: typeof AppApprovalsHistoryRoute
@@ -501,6 +521,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppReplayRoute: AppReplayRoute,
   AppAdminClientsRoute: AppAdminClientsRoute,
   AppAdminDataSourcesRoute: AppAdminDataSourcesRoute,
+  AppAdminPortfoliosRoute: AppAdminPortfoliosRoute,
   AppAdminUsersRoute: AppAdminUsersRoute,
   AppApprovalsInsightIdRoute: AppApprovalsInsightIdRoute,
   AppApprovalsHistoryRoute: AppApprovalsHistoryRoute,

@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { pool } from '../config/db.js';
+import nodemailer from 'nodemailer';
 
 const SALT_ROUNDS = 12;
 const VALID_ROLES = ['Analyst', 'CFO', 'Admin'];
@@ -33,10 +34,83 @@ export async function createUser(req, res, next) {
       `INSERT INTO users (name, email, password_hash, role)
        VALUES ($1, $2, $3, $4)
        RETURNING user_id, name, email, role`,
-      [name, email, password_hash, role],
+      [name, email, password_hash, role]
     );
 
     return res.status(201).json({ user: rows[0] });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/admin/users/invite
+ * Body: { name, email, password, role }
+ * Creates a new user and sends an invite email. Admin-only.
+ */
+export async function inviteUser(req, res, next) {
+  try {
+    const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ error: 'name, email, password, and role are required' });
+    }
+
+    if (!VALID_ROLES.includes(role)) {
+      return res.status(400).json({ error: `role must be one of: ${VALID_ROLES.join(', ')}` });
+    }
+
+    // Check for duplicate email
+    const existing = await pool.query('SELECT 1 FROM users WHERE email = $1', [email]);
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ error: 'A user with this email already exists' });
+    }
+
+    const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    const { rows } = await pool.query(
+      `INSERT INTO users (name, email, password_hash, role)
+       VALUES ($1, $2, $3, $4)
+       RETURNING user_id, name, email, role`,
+      [name, email, password_hash, role]
+    );
+
+    // Send welcome email
+    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT || 587),
+          secure: Number(process.env.SMTP_PORT) === 465,
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+        await transporter.sendMail({
+          from: `"FinSight Admin" <${process.env.SMTP_USER}>`,
+          to: email,
+          subject: "Your FinSight Access Has Been Created",
+          text: `Hello ${name},
+
+Your FinSight account has been created.
+Login URL: http://localhost:8081/login
+Email: ${email}
+Temporary Password: ${password}
+
+Please change your password after first login.
+
+— FinSight Admin`,
+        });
+        console.log(`[ADMIN] Sent invite email to ${email}`);
+      } catch (mailErr) {
+        console.error("Nodemailer delivery failed:", mailErr.message);
+      }
+    } else {
+        console.log(`[ADMIN] SMTP not configured. Invite email for ${email} skipped.`);
+    }
+
+    return res.status(201).json({ success: true, user: rows[0] });
   } catch (err) {
     next(err);
   }
@@ -49,7 +123,7 @@ export async function createUser(req, res, next) {
 export async function listUsers(_req, res, next) {
   try {
     const { rows } = await pool.query(
-      'SELECT user_id, name, email, role, is_active FROM users ORDER BY user_id',
+      'SELECT user_id, name, email, role, is_active FROM users ORDER BY user_id'
     );
     return res.json({ users: rows });
   } catch (err) {
@@ -75,7 +149,7 @@ export async function deactivateUser(req, res, next) {
     // Verify user exists
     const existing = await pool.query(
       'SELECT user_id FROM users WHERE user_id = $1',
-      [id],
+      [id]
     );
     if (existing.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -84,7 +158,7 @@ export async function deactivateUser(req, res, next) {
     const { rows } = await pool.query(
       `UPDATE users SET is_active = $1 WHERE user_id = $2
        RETURNING user_id, name, email, role, is_active`,
-      [is_active, id],
+      [is_active, id]
     );
 
     return res.json({ success: true, user: rows[0] });
@@ -109,7 +183,7 @@ export async function listPortfolios(_req, res, next) {
          cp.uploaded_by
        FROM client_portfolios cp
        JOIN companies c ON c.company_id = cp.company_id
-       ORDER BY cp.client_name, c.name`,
+       ORDER BY cp.client_name, c.name`
     );
     return res.json({ portfolios: rows });
   } catch (err) {

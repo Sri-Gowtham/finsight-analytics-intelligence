@@ -64,6 +64,7 @@ function normaliseUser(raw: {
   name: string;
   email: string;
   role: string;
+  is_active?: boolean;
 }): User {
   return {
     id: String(raw.user_id),
@@ -72,7 +73,7 @@ function normaliseUser(raw: {
     role: normaliseRole(raw.role),
     firm: "FinSight Client Firm",
     title: "",
-    active: true,
+    active: raw.is_active ?? true,
     clientIds: [],
     createdAt: new Date().toISOString(),
   };
@@ -81,7 +82,7 @@ function normaliseUser(raw: {
 export async function login(email: string, password: string): Promise<User> {
   const data = await http<{
     token: string;
-    user: { user_id: number; name: string; email: string; role: string };
+    user: { user_id: number; name: string; email: string; role: string; is_active?: boolean };
   }>("/api/auth/login", { method: "POST", body: JSON.stringify({ email: email.trim(), password }) }, false);
   localStorage.setItem(TOKEN_KEY, data.token);
   return normaliseUser(data.user);
@@ -110,7 +111,7 @@ export function currentUserSync(): User | null {
     role: normaliseRole(String(payload.role ?? "")),
     firm: "FinSight Client Firm",
     title: "",
-    active: true,
+    active: true, // token assumes active
     clientIds: [],
     createdAt: new Date().toISOString(),
   };
@@ -268,24 +269,27 @@ export async function deleteClient(id: string): Promise<void> {
 }
 
 export async function listUsers(): Promise<User[]> {
-  const res = await http<{ users?: Array<{ user_id: number; name: string; email: string; role: string }> } | Array<{ user_id: number; name: string; email: string; role: string }>>("/api/admin/users");
+  const res = await http<{ users?: Array<{ user_id: number; name: string; email: string; role: string; is_active: boolean }> } | Array<{ user_id: number; name: string; email: string; role: string; is_active: boolean }>>("/api/admin/users");
   const raw = Array.isArray(res) ? res : (res.users ?? []);
   return raw.map(normaliseUser);
 }
 
-export async function provisionUser(input: { name: string; email: string; role: Role; title: string }): Promise<User> {
-  const raw = await http<{ user_id: number; name: string; email: string; role: string }>("/api/admin/users", {
+export async function provisionUser(input: { name: string; email: string; role: Role; title: string; password?: string }): Promise<User> {
+  const raw = await http<{ user?: { user_id: number; name: string; email: string; role: string; is_active?: boolean } }>("/api/admin/users/invite", {
     method: "POST",
-    body: JSON.stringify({ name: input.name, email: input.email, role: input.role.charAt(0).toUpperCase() + input.role.slice(1), password: "Welcome123!" }),
+    body: JSON.stringify({ name: input.name, email: input.email, role: input.role.charAt(0).toUpperCase() + input.role.slice(1), password: input.password || "Welcome123!" }),
   });
-  return normaliseUser(raw);
+  if (!raw.user) throw new Error("Failed to provision user");
+  return normaliseUser(raw.user);
 }
 
 export async function setUserActive(userId: string, active: boolean): Promise<User> {
-  const users = await listUsers();
-  const user = users.find((u) => u.id === userId);
-  if (!user) throw new Error("User not found");
-  return { ...user, active };
+  const raw = await http<{ success: boolean; user?: { user_id: number; name: string; email: string; role: string; is_active: boolean } }>(`/api/admin/users/${userId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ is_active: active }),
+  });
+  if (!raw.user) throw new Error("Failed to update user active status");
+  return normaliseUser(raw.user);
 }
 
 type RawInsight = { insight_id: number; company_id: number; generated_text: string; source_metric_ids: string | null; insight_type: string | null; created_at: string };

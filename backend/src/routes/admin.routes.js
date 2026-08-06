@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth, requireRole } from '../middleware/auth.middleware.js';
 import {
   createUser,
+  inviteUser,
   listUsers,
   deactivateUser,
   listPortfolios,
@@ -9,6 +10,7 @@ import {
   updatePortfolio,
   deletePortfolio,
 } from '../controllers/admin.controller.js';
+import clientsRoutes from './clients.routes.js';
 
 const router = Router();
 
@@ -17,8 +19,12 @@ router.use(requireAuth, requireRole('Admin'));
 
 // User management
 router.post('/users',          createUser);
+router.post('/users/invite',   inviteUser);
 router.get('/users',           listUsers);
 router.patch('/users/:id',     deactivateUser);
+
+// Clients management
+router.use('/clients', clientsRoutes);
 
 // Portfolio management routes
 router.get('/portfolios',       listPortfolios);

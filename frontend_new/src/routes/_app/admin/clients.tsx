@@ -1,73 +1,116 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RoleGuard } from "@/components/RoleGuard";
 import { ErrorState, LoadingState, PageHeader } from "@/components/states";
-import { useClients } from "@/lib/queries";
-import { crore, shortDate } from "@/lib/format";
+import { useAdminPortfolios, useAdminCreatePortfolio, useAdminDeletePortfolio } from "@/lib/queries";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ClientOnboardingForm } from "@/components/ClientOnboardingForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_app/admin/clients")({
-  head: () => ({
-    meta: [
-      { title: "Client Portfolios — FinSight" },
-      {
-        name: "description",
-        content:
-          "Client portfolio register: assets under advisory, covered NSE-listed banks and assigned analysts for every institutional mandate.",
-      },
-      { property: "og:title", content: "Client Portfolios — FinSight" },
-      { property: "og:description", content: "Institutional mandates, coverage and assignments." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
   component: () => (
     <RoleGuard allow={["admin"]}>
-      <ClientsPage />
+      <ClientManagementPage />
     </RoleGuard>
   ),
 });
 
-function ClientsPage() {
-  const clients = useClients();
+function ClientManagementPage() {
+  const portfolios = useAdminPortfolios();
+  const deletePortfolio = useAdminDeletePortfolio();
 
   return (
     <>
-      <PageHeader
-        eyebrow="Administration"
-        title="Client portfolios"
-        description="Every advisory mandate with its coverage universe and assigned research team."
-      />
-      {clients.isError ? (
-        <ErrorState onRetry={() => void clients.refetch()} />
-      ) : clients.isPending ? (
+      <div className="flex items-center justify-between mb-6">
+        <PageHeader
+          eyebrow="Administration"
+          title="Client Portfolios"
+          description="Manage which banks each client has in their portfolio."
+        />
+        <ClientOnboardingModal />
+      </div>
+
+      {portfolios.isError ? (
+        <ErrorState onRetry={() => void portfolios.refetch()} />
+      ) : portfolios.isPending ? (
         <LoadingState rows={3} />
+      ) : (portfolios.data ?? []).length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          No client portfolios yet. Add one above.
+        </p>
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
-          {(clients.data ?? []).map((c) => (
-            <li key={c.id} className="surface space-y-3 p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="font-semibold">{c.name}</h2>
-                  <p className="text-xs text-muted-foreground">
-                    {c.type} · onboarded {shortDate(c.onboardedAt)}
-                  </p>
+        <ul className="space-y-3">
+          {(portfolios.data ?? []).map((c) => (
+            <li
+              key={c.id}
+              className="surface flex flex-wrap items-center justify-between gap-4 p-4"
+            >
+              <div>
+                <p className="font-semibold">{c.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {c.bankSymbols.length} bank
+                  {c.bankSymbols.length !== 1 ? "s" : ""} in portfolio
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {c.bankSymbols.map((sym) => (
+                    <Badge key={sym} variant="outline" className="text-xs">
+                      {sym}
+                    </Badge>
+                  ))}
                 </div>
-                <Badge variant="outline">{crore(c.aumCr)} AUA</Badge>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {c.bankSymbols.map((s) => (
-                  <Badge key={s} className="border-transparent bg-secondary text-secondary-foreground">
-                    {s}
-                  </Badge>
-                ))}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {c.analystIds.length} analyst{c.analystIds.length === 1 ? "" : "s"} assigned
-              </p>
+              <Button
+                variant="ghost"
+                size="icon"
+                disabled={deletePortfolio.isPending}
+                onClick={() =>
+                  deletePortfolio.mutate(c.id, {
+                    onSuccess: () => toast.success("Portfolio entry removed"),
+                    onError: () => toast.error("Failed to remove entry"),
+                  })
+                }
+              >
+                <Trash2 className="h-4 w-4 text-destructive/80" />
+              </Button>
             </li>
           ))}
         </ul>
       )}
     </>
+  );
+}
+
+function ClientOnboardingModal() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Add New Client
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Banking Client Onboarding</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          <ClientOnboardingForm onCancel={() => setOpen(false)} onSuccess={() => setOpen(false)} />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -146,3 +146,22 @@ export function useUpdateProfile() {
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.users }),
   });
 }
+export const useAdminPortfolios = () =>
+  useQuery({ queryKey: ["admin-portfolios"], queryFn: api.listClients });
+
+export function useAdminCreatePortfolio() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.saveClient,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-portfolios"] }),
+  });
+}
+
+export function useAdminDeletePortfolio() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.deleteClient,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-portfolios"] }),
+  });
+}
+

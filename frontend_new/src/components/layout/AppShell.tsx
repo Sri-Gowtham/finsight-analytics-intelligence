@@ -75,7 +75,8 @@ const NAV: Record<Role, NavGroup[]> = {
       items: [
         { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
         { to: "/admin/users", label: "User Management", icon: Users },
-        { to: "/admin/clients", label: "Client Portfolios", icon: Briefcase },
+        { to: "/admin/clients", label: "Client Management", icon: Briefcase },
+        { to: "/admin/portfolios", label: "Portfolios", icon: Briefcase },
         { to: "/admin/data-sources", label: "Data Sources", icon: Database },
       ],
     },
