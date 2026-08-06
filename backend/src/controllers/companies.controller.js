@@ -59,10 +59,6 @@ export async function getMetricsHistory(req, res, next) {
     const { id } = req.params;
     const { timestamp } = req.query;
 
-    if (!timestamp) {
-      return res.status(400).json({ error: 'Query parameter "timestamp" is required' });
-    }
-
     // Verify company exists
     const company = await pool.query(
       'SELECT company_id FROM companies WHERE company_id = $1',
@@ -72,6 +68,26 @@ export async function getMetricsHistory(req, res, next) {
       return res.status(404).json({ error: 'Company not found' });
     }
 
+    if (!timestamp) {
+      // No timestamp: Return full history
+      const { rows } = await pool.query(
+        `SELECT metric_name, value, timestamp
+         FROM   financial_metrics
+         WHERE  company_id = $1
+         ORDER  BY metric_name, timestamp ASC`,
+        [id],
+      );
+      
+      if (rows.length === 0) {
+        return res.status(404).json({
+          error: 'No metric data exists for this company',
+        });
+      }
+      
+      return res.json({ company_id: Number(id), metrics: rows });
+    }
+
+    // Timestamp provided: Return point-in-time latest values
     const { rows } = await pool.query(
       `SELECT DISTINCT ON (metric_name)
               metric_name, value, timestamp

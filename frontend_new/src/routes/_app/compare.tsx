@@ -93,19 +93,21 @@ function ComparePage() {
     : [];
 
   // NIM trend data: one row per quarter, one key per bank
-  const nimTrend = allQuarters.map((q, i) => {
+  const nimTrend = allQuarters.map((q) => {
     const row: Record<string, string | number> = { quarter: q };
     chosen.forEach((bank) => {
-      row[bank.symbol] = bank.history[i]?.nim ?? 0;
+      const pt = bank.history.find(h => h.quarter === q);
+      row[bank.symbol] = pt?.nim ?? 0;
     });
     return row;
   });
 
   // ROE grouped bar data: one row per quarter, one key per bank
-  const roeTrend = allQuarters.map((q, i) => {
+  const roeTrend = allQuarters.map((q) => {
     const row: Record<string, string | number> = { quarter: q };
     chosen.forEach((bank) => {
-      row[bank.symbol] = bank.history[i]?.roe ?? 0;
+      const pt = bank.history.find(h => h.quarter === q);
+      row[bank.symbol] = pt?.roe ?? 0;
     });
     return row;
   });
@@ -117,10 +119,11 @@ function ComparePage() {
   }));
 
   // Revenue growth area data: one row per quarter
-  const revGrowthTrend = allQuarters.map((q, i) => {
+  const revGrowthTrend = allQuarters.map((q) => {
     const row: Record<string, string | number> = { quarter: q };
     chosen.forEach((bank) => {
-      row[bank.symbol] = bank.history[i]?.revenueGrowth ?? 0;
+      const pt = bank.history.find(h => h.quarter === q);
+      row[bank.symbol] = pt?.revenueGrowth ?? 0;
     });
     return row;
   });

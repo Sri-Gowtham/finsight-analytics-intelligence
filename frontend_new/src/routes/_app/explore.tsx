@@ -165,24 +165,24 @@ function ExplorePage() {
                   </div>
                   <Badge variant="outline">{bank.segment}</Badge>
                 </div>
-                <div className="mt-4 flex items-end justify-between gap-2">
-                  <p className="text-xl font-bold tabular-nums">₹{bank.price.toFixed(2)}</p>
-                  <p
-                    className={`text-sm font-semibold tabular-nums ${
-                      bank.changePct >= 0 ? "text-primary" : "text-destructive"
-                    }`}
-                  >
-                    {signedPct(bank.changePct)}
-                  </p>
-                </div>
+                {bank.price > 0 && (
+                  <div className="mt-4 flex items-end justify-between gap-2">
+                    <p className="text-xl font-bold tabular-nums">₹{bank.price.toFixed(2)}</p>
+                    <p
+                      className={`text-sm font-semibold tabular-nums ${
+                        bank.changePct >= 0 ? "text-primary" : "text-destructive"
+                      }`}
+                    >
+                      {signedPct(bank.changePct)}
+                    </p>
+                  </div>
+                )}
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
                   {[
-                    ["Market cap", crore(bank.marketCapCr)],
                     ["NIM", pct(bank.latest.nim)],
                     ["Gross NPA", pct(bank.latest.gnpa)],
                     ["CAR", pct(bank.latest.car)],
                     ["ROA", pct(bank.latest.roa)],
-                    ["CASA", pct(bank.latest.casa)],
                   ].map(([label, value]) => (
                     <div key={label} className="rounded-lg bg-muted/50 px-3 py-2">
                       <dt className="text-muted-foreground">{label}</dt>

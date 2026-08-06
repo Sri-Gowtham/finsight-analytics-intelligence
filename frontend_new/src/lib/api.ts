@@ -99,11 +99,9 @@ export function currentUserSync(): User | null {
     localStorage.removeItem(TOKEN_KEY);
     return null;
   }
-  if (payload.exp && typeof payload.exp === "number") {
-    if (Date.now() / 1000 > payload.exp) {
-      localStorage.removeItem(TOKEN_KEY);
-      return null;
-    }
+  if (!payload.exp || typeof payload.exp !== "number" || Date.now() / 1000 > payload.exp) {
+    localStorage.removeItem(TOKEN_KEY);
+    return null;
   }
   return {
     id: String(payload.user_id),
@@ -148,7 +146,7 @@ function buildMetricPoint(quarter: string, metrics: RawMetric[]): import("./type
 }
 
 async function fetchBankHistory(companyId: number): Promise<RawMetric[]> {
-  const res = await http<{ metrics?: RawMetric[] } | RawMetric[]>(`/api/companies/${companyId}/metrics`);
+  const res = await http<{ metrics?: RawMetric[] } | RawMetric[]>(`/api/companies/${companyId}/metrics/history`);
   return Array.isArray(res) ? res : (res.metrics ?? []);
 }
 
@@ -158,13 +156,43 @@ export async function listBanks(): Promise<Bank[]> {
   const banks = await Promise.all(
     companies.map(async (c) => {
       const history = await fetchBankHistory(c.company_id);
-      const byQuarter = new Map<string, RawMetric[]>();
+      
+      // Deduplicate timestamps: keep latest timestamp per (metric_name, quarter)
+      const metricByQuarter = new Map<string, RawMetric>();
       for (const m of history) {
-        const quarter = m.timestamp.slice(0, 7);
+        const date = new Date(m.timestamp);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const q = Math.ceil(month / 3);
+        const quarter = `Q${q} ${year}`;
+        const key = `${m.metric_name}|${quarter}`;
+        
+        const existing = metricByQuarter.get(key);
+        if (!existing || new Date(m.timestamp).getTime() > new Date(existing.timestamp).getTime()) {
+          metricByQuarter.set(key, m);
+        }
+      }
+      
+      const byQuarter = new Map<string, RawMetric[]>();
+      for (const m of metricByQuarter.values()) {
+        const date = new Date(m.timestamp);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const q = Math.ceil(month / 3);
+        const quarter = `Q${q} ${year}`;
+        
         if (!byQuarter.has(quarter)) byQuarter.set(quarter, []);
         byQuarter.get(quarter)!.push(m);
       }
-      const quarters = Array.from(byQuarter.keys()).sort();
+      
+      // Sort quarters chronologically. Since format is "Qx YYYY", we sort by YYYY then Qx.
+      const quarters = Array.from(byQuarter.keys()).sort((a, b) => {
+        const [qa, ya] = a.split(" ");
+        const [qb, yb] = b.split(" ");
+        if (ya !== yb) return ya.localeCompare(yb);
+        return qa.localeCompare(qb);
+      });
+      
       const historyPoints = quarters.map((q) => buildMetricPoint(q, byQuarter.get(q)!));
       // Compute quarter-over-quarter revenue growth
       for (let i = 1; i < historyPoints.length; i++) {
