@@ -63,6 +63,7 @@ function LoginPage() {
   const { error: oauthError } = Route.useSearch();
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [googleConfigured, setGoogleConfigured] = useState<boolean | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -73,8 +74,18 @@ function LoginPage() {
     if (ready && user) navigate({ to: "/dashboard", replace: true });
   }, [ready, user, navigate]);
 
+  // Check if Google OAuth credentials are configured on the backend
   useEffect(() => {
-    if (oauthError === "oauth_failed") {
+    fetch("/api/auth/google/status")
+      .then((res) => res.json())
+      .then((data: { configured: boolean }) => setGoogleConfigured(data.configured))
+      .catch(() => setGoogleConfigured(false));
+  }, []);
+
+  useEffect(() => {
+    if (oauthError === "oauth_not_configured") {
+      toast.error("Google sign-in is not configured for this environment.");
+    } else if (oauthError === "oauth_failed") {
       toast.error("Google sign-in failed. Please try again.");
     }
   }, [oauthError]);
@@ -95,6 +106,8 @@ function LoginPage() {
     form.setValue("password", DEMO_PASSWORD);
     setError(null);
   };
+
+  const isGoogleDisabled = googleConfigured === false;
 
   return (
     <div className="gradient-hero flex min-h-screen items-center justify-center px-4 py-12">
@@ -207,21 +220,37 @@ function LoginPage() {
             <div className="h-px flex-1 bg-border" />
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              window.location.href = "/api/auth/google";
-            }}
-            className="mt-4 flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-800 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:bg-white dark:text-gray-800 dark:hover:bg-gray-100"
-          >
-            <svg className="size-4" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-            </svg>
-            Continue with Google
-          </button>
+          <div className="relative mt-4 group">
+            <button
+              id="google-signin-btn"
+              type="button"
+              disabled={isGoogleDisabled}
+              onClick={() => {
+                if (!isGoogleDisabled) {
+                  window.location.href = "/api/auth/google";
+                }
+              }}
+              className={`flex w-full items-center justify-center gap-3 rounded-lg border px-4 py-2.5 text-sm font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 ${
+                isGoogleDisabled
+                  ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500"
+                  : "border-gray-300 bg-white text-gray-800 hover:bg-gray-50 dark:bg-white dark:text-gray-800 dark:hover:bg-gray-100"
+              }`}
+            >
+              <svg className={`size-4 ${isGoogleDisabled ? "opacity-40" : ""}`} viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+              </svg>
+              Continue with Google
+            </button>
+            {isGoogleDisabled && (
+              <div className="pointer-events-none absolute -top-10 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-gray-700">
+                Google sign-in is not configured for this environment
+                <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
+              </div>
+            )}
+          </div>
 
           <div className="mt-6 rounded-xl border border-border bg-muted/50 p-4">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -252,3 +281,4 @@ function LoginPage() {
     </div>
   );
 }
+

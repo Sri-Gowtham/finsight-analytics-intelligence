@@ -3,20 +3,19 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { pool } from './db.js';
 
 // Google OAuth requires a real Google Cloud Console project with OAuth 2.0 credentials.
-// Where to get GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
-// 1. Go to console.cloud.google.com -> APIs & Services -> Credentials -> Create OAuth 2.0 Client ID
-// 2. Set Authorized redirect URI = http://localhost:8081/api/auth/google/callback
-// 3. Paste Client ID and Client Secret into your .env file.
+// See backend/.env.example for full setup instructions.
+// IMPORTANT: Authorized redirect URI in Google Console must point to the BACKEND port (3001),
+// NOT the Vite frontend port (8081), because Google calls the callback directly.
 export function configurePassport() {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    console.warn("[OAUTH] GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET not set in .env. Google login will redirect to error until configured.");
+    console.warn("[OAUTH] GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET not set in .env. Google login will be disabled until configured.");
     return;
   }
 
   passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8081/api/auth/google/callback'
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3001/api/auth/google/callback'
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
