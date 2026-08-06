@@ -1,21 +1,30 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { GitCompareArrows, X } from "lucide-react";
+import { GitCompareArrows, X, Download, Trophy, TrendingUp, Shield, BarChart3, Award } from "lucide-react";
 import { RoleGuard } from "@/components/RoleGuard";
 import { EmptyState, ErrorState, LoadingState, PageHeader } from "@/components/states";
+import { StatCard } from "@/components/data-display";
 import { useBanks } from "@/lib/queries";
-import { crore, pct } from "@/lib/format";
-import { ComparisonBarChart, TrendLineChart, SERIES_COLORS } from "@/components/charts";
+import { pct, quarterLabel } from "@/lib/format";
+import {
+  ChartPanel,
+  ChartSkeleton,
+  ComparisonBarChart,
+  GradientAreaChart,
+  HorizontalBarChart,
+  RadarComparisonChart,
+  TrendLineChart,
+  SERIES_COLORS,
+} from "@/components/charts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Bank } from "@/lib/types";
 
 export const Route = createFileRoute("/_app/compare")({
@@ -47,11 +56,13 @@ export const Route = createFileRoute("/_app/compare")({
 });
 
 const MAX = 4;
+const METRICS = ["NIM", "ROE", "ROA", "Revenue Growth", "Profit Margin"] as const;
 
 function ComparePage() {
   const { symbols } = Route.useSearch() as { symbols: string };
   const navigate = Route.useNavigate();
   const { data, isPending, isError, refetch } = useBanks();
+  const [metricFilter, setMetricFilter] = useState<string>("all");
 
   const selected = useMemo(
     () => symbols.split(",").filter(Boolean).slice(0, MAX) as string[],
@@ -75,42 +86,96 @@ function ComparePage() {
     .map((s) => banks.find((b) => b.symbol === s))
     .filter((b): b is Bank => Boolean(b));
 
-  const barData = chosen.map((b) => ({
-    name: b.symbol,
-    nim: b.latest.nim,
-    gnpa: b.latest.gnpa,
-    roa: b.latest.roa,
-    car: b.latest.car,
-  }));
+  // ── Build chart data from the banks' history arrays ──
 
-  const nimTrend = (banks[0]?.history ?? []).map((point, i) => {
-    const row: Record<string, string | number> = { quarter: point.quarter };
+  const allQuarters = chosen.length > 0
+    ? (chosen[0]?.history ?? []).map((p) => p.quarter)
+    : [];
+
+  // NIM trend data: one row per quarter, one key per bank
+  const nimTrend = allQuarters.map((q, i) => {
+    const row: Record<string, string | number> = { quarter: q };
     chosen.forEach((bank) => {
       row[bank.symbol] = bank.history[i]?.nim ?? 0;
     });
     return row;
   });
 
-  const rows: { label: string; get: (b: Bank) => string }[] = [
-    { label: "Segment", get: (b) => b.segment },
-    { label: "Market cap", get: (b) => crore(b.marketCapCr) },
-    { label: "Net interest margin", get: (b) => pct(b.latest.nim) },
-    { label: "Gross NPA", get: (b) => pct(b.latest.gnpa) },
-    { label: "Net NPA", get: (b) => pct(b.latest.nnpa) },
-    { label: "Capital adequacy", get: (b) => pct(b.latest.car) },
-    { label: "CASA ratio", get: (b) => pct(b.latest.casa) },
-    { label: "Return on assets", get: (b) => pct(b.latest.roa) },
-    { label: "PAT (₹ Cr)", get: (b) => b.latest.pat.toLocaleString("en-IN") },
-    { label: "Advances (₹ Cr)", get: (b) => b.latest.advances.toLocaleString("en-IN") },
-    { label: "Deposits (₹ Cr)", get: (b) => b.latest.deposits.toLocaleString("en-IN") },
-  ];
+  // ROE grouped bar data: one row per quarter, one key per bank
+  const roeTrend = allQuarters.map((q, i) => {
+    const row: Record<string, string | number> = { quarter: q };
+    chosen.forEach((bank) => {
+      row[bank.symbol] = bank.history[i]?.roe ?? 0;
+    });
+    return row;
+  });
+
+  // ROA horizontal bar data: one row per bank, latest values
+  const roaData = chosen.map((b) => ({
+    name: b.symbol,
+    ROA: b.latest.roa,
+  }));
+
+  // Revenue growth area data: one row per quarter
+  const revGrowthTrend = allQuarters.map((q, i) => {
+    const row: Record<string, string | number> = { quarter: q };
+    chosen.forEach((bank) => {
+      row[bank.symbol] = bank.history[i]?.revenueGrowth ?? 0;
+    });
+    return row;
+  });
+
+  // Radar data: metrics as axes, bank values as series
+  const radarMetrics = ["NIM", "ROE", "ROA", "Profit Margin", "CAR"];
+  const radarData = radarMetrics.map((metric) => {
+    const row: Record<string, string | number> = { metric };
+    chosen.forEach((b) => {
+      switch (metric) {
+        case "NIM": row[b.symbol] = b.latest.nim; break;
+        case "ROE": row[b.symbol] = b.latest.roe; break;
+        case "ROA": row[b.symbol] = b.latest.roa; break;
+        case "Profit Margin": row[b.symbol] = b.latest.profitMargin; break;
+        case "CAR": row[b.symbol] = b.latest.car; break;
+      }
+    });
+    return row;
+  });
+
+  // ── Performance summary winners ──
+  const highestROE = chosen.length > 0
+    ? chosen.reduce((a, b) => (a.latest.roe > b.latest.roe ? a : b))
+    : null;
+  const highestRevGrowth = chosen.length > 0
+    ? chosen.reduce((a, b) => (a.latest.revenueGrowth > b.latest.revenueGrowth ? a : b))
+    : null;
+  const lowestRisk = chosen.length > 0
+    ? chosen.reduce((a, b) => (a.latest.gnpa < b.latest.gnpa ? a : b))
+    : null;
+  const highestProfitMargin = chosen.length > 0
+    ? chosen.reduce((a, b) => (a.latest.profitMargin > b.latest.profitMargin ? a : b))
+    : null;
+
+  // Overall winner: bank that wins the most categories
+  const winCount = new Map<string, number>();
+  [highestROE, highestRevGrowth, lowestRisk, highestProfitMargin].forEach((winner) => {
+    if (winner) winCount.set(winner.symbol, (winCount.get(winner.symbol) ?? 0) + 1);
+  });
+  const overallWinner = chosen.length > 0
+    ? chosen.reduce((a, b) => ((winCount.get(a.symbol) ?? 0) >= (winCount.get(b.symbol) ?? 0) ? a : b))
+    : null;
+
+  const bankSeries = chosen.map((b, i) => ({
+    key: b.symbol,
+    label: b.symbol,
+    color: SERIES_COLORS[i % SERIES_COLORS.length],
+  }));
 
   return (
     <>
       <PageHeader
         eyebrow="Benchmarking"
         title="Peer comparison"
-        description={`Select up to ${MAX} institutions to compare on the latest reported quarter and margin trajectory.`}
+        description={`Select up to ${MAX} institutions to compare across margin, returns, growth and risk profiles.`}
         actions={
           selected.length ? (
             <Button variant="outline" size="sm" onClick={() => setSelected([])}>
@@ -120,33 +185,49 @@ function ComparePage() {
         }
       />
 
-      <div className="surface space-y-3 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Coverage universe ({selected.length}/{MAX} selected)
-        </p>
-        <ul className="flex flex-wrap gap-2">
-          {banks.map((bank) => {
-            const active = selected.includes(bank.symbol);
-            return (
-              <li key={bank.symbol}>
-                <button
-                  type="button"
-                  onClick={() => toggle(bank.symbol)}
-                  aria-pressed={active}
-                  disabled={!active && selected.length >= MAX}
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${
-                    active
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card hover:bg-accent"
-                  }`}
-                >
-                  {bank.symbol}
-                  {active ? <X className="size-3" aria-hidden /> : null}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+      {/* ── Filter Bar ── */}
+      <div className="surface flex flex-wrap items-center gap-3 p-4">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            Banks ({selected.length}/{MAX})
+          </p>
+          <ul className="flex flex-wrap gap-2">
+            {banks.map((bank) => {
+              const active = selected.includes(bank.symbol);
+              return (
+                <li key={bank.symbol}>
+                  <button
+                    type="button"
+                    onClick={() => toggle(bank.symbol)}
+                    aria-pressed={active}
+                    disabled={!active && selected.length >= MAX}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card hover:bg-accent"
+                    }`}
+                  >
+                    {bank.symbol}
+                    {active ? <X className="size-3" aria-hidden /> : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <div className="flex items-center gap-2">
+          <Select value={metricFilter} onValueChange={setMetricFilter}>
+            <SelectTrigger className="w-[160px]" aria-label="Filter by metric">
+              <SelectValue placeholder="All metrics" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All metrics</SelectItem>
+              {METRICS.map((m) => (
+                <SelectItem key={m} value={m}>{m}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {chosen.length === 0 ? (
@@ -157,73 +238,130 @@ function ComparePage() {
         />
       ) : (
         <>
+          {/* ── 5 Chart Panels ── */}
           <div className="grid gap-4 lg:grid-cols-2">
-            <section className="surface p-5">
-              <h2 className="text-sm font-semibold">Latest quarter benchmark</h2>
-              <p className="text-xs text-muted-foreground">Percent</p>
-              <div className="mt-4">
-                <ComparisonBarChart
-                  data={barData}
-                  series={[
-                    { key: "nim", label: "NIM" },
-                    { key: "gnpa", label: "GNPA" },
-                    { key: "roa", label: "ROA" },
-                    { key: "car", label: "CAR" },
-                  ]}
-                />
-              </div>
-            </section>
-            <section className="surface p-5">
-              <h2 className="text-sm font-semibold">Margin trajectory</h2>
-              <p className="text-xs text-muted-foreground">Net interest margin, percent</p>
-              <div className="mt-4">
-                <TrendLineChart
-                  data={nimTrend}
-                  height={300}
-                  series={chosen.map((b, i) => ({
-                    key: b.symbol,
-                    label: b.symbol,
-                    color: SERIES_COLORS[i % SERIES_COLORS.length],
-                  }))}
-                />
-              </div>
-            </section>
+            {/* a) NIM Multi-Line */}
+            {(metricFilter === "all" || metricFilter === "NIM") && (
+              <ChartPanel title="Net Interest Margin" subtitle="Quarterly NIM trend, percent">
+                {nimTrend.length > 0 ? (
+                  <TrendLineChart
+                    data={nimTrend}
+                    height={300}
+                    series={bankSeries}
+                    formatQuarters
+                  />
+                ) : (
+                  <ChartSkeleton height={300} />
+                )}
+              </ChartPanel>
+            )}
+
+            {/* b) ROE Grouped Bar */}
+            {(metricFilter === "all" || metricFilter === "ROE") && (
+              <ChartPanel title="ROE Comparison" subtitle="Return on Equity by quarter">
+                {roeTrend.length > 0 ? (
+                  <ComparisonBarChart
+                    data={roeTrend}
+                    series={bankSeries}
+                    xKey="quarter"
+                    height={300}
+                    formatQuarters
+                  />
+                ) : (
+                  <ChartSkeleton height={300} />
+                )}
+              </ChartPanel>
+            )}
+
+            {/* c) ROA Horizontal Bar */}
+            {(metricFilter === "all" || metricFilter === "ROA") && (
+              <ChartPanel title="ROA Comparison" subtitle="Return on Assets, latest quarter">
+                {roaData.length > 0 ? (
+                  <HorizontalBarChart
+                    data={roaData}
+                    series={[{ key: "ROA", label: "ROA %" }]}
+                    yKey="name"
+                    height={Math.max(200, chosen.length * 80)}
+                  />
+                ) : (
+                  <ChartSkeleton height={260} />
+                )}
+              </ChartPanel>
+            )}
+
+            {/* d) Revenue Growth Area */}
+            {(metricFilter === "all" || metricFilter === "Revenue Growth") && (
+              <ChartPanel title="Revenue Growth" subtitle="Quarter-over-quarter growth %">
+                {revGrowthTrend.length > 0 ? (
+                  <GradientAreaChart
+                    data={revGrowthTrend}
+                    series={bankSeries}
+                    height={300}
+                    formatQuarters
+                  />
+                ) : (
+                  <ChartSkeleton height={300} />
+                )}
+              </ChartPanel>
+            )}
           </div>
 
-          <section className="surface overflow-x-auto p-1">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="min-w-[180px]">Metric</TableHead>
-                  {chosen.map((b) => (
-                    <TableHead key={b.symbol} className="text-right">
-                      <span className="block font-semibold text-foreground">{b.symbol}</span>
-                      <span className="block truncate text-xs font-normal text-muted-foreground">
-                        {b.name}
-                      </span>
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.label}>
-                    <TableCell className="font-medium">{row.label}</TableCell>
-                    {chosen.map((b) => (
-                      <TableCell key={b.symbol} className="text-right tabular-nums">
-                        {row.get(b)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </section>
+          {/* e) Profit Margin Radar — full width */}
+          {(metricFilter === "all" || metricFilter === "Profit Margin") && (
+            <ChartPanel title="Multi-Metric Radar" subtitle="NIM, ROE, ROA, Profit Margin, CAR">
+              {radarData.length > 0 ? (
+                <RadarComparisonChart
+                  data={radarData}
+                  series={bankSeries}
+                  metricKey="metric"
+                  height={380}
+                />
+              ) : (
+                <ChartSkeleton height={380} />
+              )}
+            </ChartPanel>
+          )}
 
+          {/* ── Performance Summary Cards ── */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <StatCard
+              label="Highest ROE"
+              value={highestROE ? `${pct(highestROE.latest.roe)}` : "—"}
+              hint={highestROE?.symbol}
+              icon={<TrendingUp className="size-4" />}
+            />
+            <StatCard
+              label="Highest Revenue Growth"
+              value={highestRevGrowth ? `${pct(highestRevGrowth.latest.revenueGrowth)}` : "—"}
+              hint={highestRevGrowth?.symbol}
+              icon={<BarChart3 className="size-4" />}
+            />
+            <StatCard
+              label="Lowest Risk"
+              value={lowestRisk ? `${pct(lowestRisk.latest.gnpa)} GNPA` : "—"}
+              hint={lowestRisk?.symbol}
+              icon={<Shield className="size-4" />}
+            />
+            <StatCard
+              label="Highest Profit Margin"
+              value={highestProfitMargin ? `${pct(highestProfitMargin.latest.profitMargin)}` : "—"}
+              hint={highestProfitMargin?.symbol}
+              icon={<Trophy className="size-4" />}
+            />
+            <StatCard
+              label="Overall Winner"
+              value={overallWinner?.symbol ?? "—"}
+              hint={overallWinner ? `${winCount.get(overallWinner.symbol) ?? 0} categories` : undefined}
+              icon={<Award className="size-4" />}
+              tone="ai"
+            />
+          </div>
+
+          {/* ── Quarter badges ── */}
           <div className="flex flex-wrap gap-2">
             {chosen.map((b) => (
               <Badge key={b.symbol} variant="outline">
-                {b.name} · {b.latest.quarter}
+                {b.name} · {quarterLabel(b.latest.quarter)}
               </Badge>
             ))}
           </div>

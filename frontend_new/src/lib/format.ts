@@ -39,3 +39,20 @@ export const initials = (name: string) =>
 
 export const roleLabel = (role: string) =>
   role === "cfo" ? "CFO" : role.charAt(0).toUpperCase() + role.slice(1);
+
+/** Convert "2023-03" or "2023-06" → "Q1 2023" etc. */
+export const quarterLabel = (raw: string): string => {
+  if (!raw || raw === "—") return raw;
+  const match = raw.match(/^(\d{4})-(\d{2})/);
+  if (!match) return raw;
+  const [, year, month] = match;
+  const q = Math.ceil(Number(month) / 3);
+  return `Q${q} ${year}`;
+};
+
+/** Format a number as ₹ Cr with 2 decimal places */
+export const fmtFinancial = (n: number): string => {
+  if (Math.abs(n) >= 100_000) return `₹${inr(Math.round(n / 1000) / 100)} L Cr`;
+  if (Math.abs(n) >= 1) return `₹${inr(Math.round(n * 100) / 100)} Cr`;
+  return `₹${n.toFixed(2)} Cr`;
+};

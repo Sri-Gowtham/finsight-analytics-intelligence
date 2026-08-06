@@ -24,6 +24,14 @@ export interface MetricPoint {
   advances: number;
   deposits: number;
   price: number;
+  /** Derived: Return on Equity ≈ ROA × equity multiplier proxy */
+  roe: number;
+  /** Derived: Revenue index (normalised from NIM × advances proxy) */
+  revenue: number;
+  /** Derived: Profit margin ≈ (NIM - credit cost proxy) */
+  profitMargin: number;
+  /** Derived: Quarter-over-quarter revenue growth % */
+  revenueGrowth: number;
 }
 
 export interface Bank {

@@ -11,13 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GetStartedRouteImport } from './routes/get-started'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as VerifyOtpRouteImport } from './routes/verify-otp'
 import { Route as AppAccountRouteImport } from './routes/_app/account'
 import { Route as AppCompareRouteImport } from './routes/_app/compare'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppExploreRouteImport } from './routes/_app/explore'
 import { Route as AppReplayRouteImport } from './routes/_app/replay'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as SignupAdminRouteImport } from './routes/signup/admin'
 import { Route as AppAdminClientsRouteImport } from './routes/_app/admin/clients'
 import { Route as AppAdminDataSourcesRouteImport } from './routes/_app/admin/data-sources'
@@ -38,6 +42,11 @@ const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GetStartedRoute = GetStartedRouteImport.update({
   id: '/get-started',
   path: '/get-started',
@@ -46,6 +55,16 @@ const GetStartedRoute = GetStartedRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyOtpRoute = VerifyOtpRouteImport.update({
+  id: '/verify-otp',
+  path: '/verify-otp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppAccountRoute = AppAccountRouteImport.update({
@@ -72,6 +91,11 @@ const AppReplayRoute = AppReplayRouteImport.update({
   id: '/replay',
   path: '/replay',
   getParentRoute: () => AppRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SignupAdminRoute = SignupAdminRouteImport.update({
   id: '/signup/admin',
@@ -126,13 +150,17 @@ const AppScenariosHistoryRoute = AppScenariosHistoryRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/get-started': typeof GetStartedRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-otp': typeof VerifyOtpRoute
   '/account': typeof AppAccountRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/explore': typeof AppExploreRoute
   '/replay': typeof AppReplayRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/signup/admin': typeof SignupAdminRoute
   '/admin/clients': typeof AppAdminClientsRoute
   '/admin/data-sources': typeof AppAdminDataSourcesRoute
@@ -146,13 +174,17 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/get-started': typeof GetStartedRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-otp': typeof VerifyOtpRoute
   '/account': typeof AppAccountRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/explore': typeof AppExploreRoute
   '/replay': typeof AppReplayRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/signup/admin': typeof SignupAdminRoute
   '/admin/clients': typeof AppAdminClientsRoute
   '/admin/data-sources': typeof AppAdminDataSourcesRoute
@@ -168,13 +200,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/get-started': typeof GetStartedRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/verify-otp': typeof VerifyOtpRoute
   '/_app/account': typeof AppAccountRoute
   '/_app/compare': typeof AppCompareRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/explore': typeof AppExploreRoute
   '/_app/replay': typeof AppReplayRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/signup/admin': typeof SignupAdminRoute
   '/_app/admin/clients': typeof AppAdminClientsRoute
   '/_app/admin/data-sources': typeof AppAdminDataSourcesRoute
@@ -190,13 +226,17 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/forgot-password'
     | '/get-started'
     | '/login'
+    | '/reset-password'
+    | '/verify-otp'
     | '/account'
     | '/compare'
     | '/dashboard'
     | '/explore'
     | '/replay'
+    | '/auth/callback'
     | '/signup/admin'
     | '/admin/clients'
     | '/admin/data-sources'
@@ -210,13 +250,17 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forgot-password'
     | '/get-started'
     | '/login'
+    | '/reset-password'
+    | '/verify-otp'
     | '/account'
     | '/compare'
     | '/dashboard'
     | '/explore'
     | '/replay'
+    | '/auth/callback'
     | '/signup/admin'
     | '/admin/clients'
     | '/admin/data-sources'
@@ -231,13 +275,17 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_app'
+    | '/forgot-password'
     | '/get-started'
     | '/login'
+    | '/reset-password'
+    | '/verify-otp'
     | '/_app/account'
     | '/_app/compare'
     | '/_app/dashboard'
     | '/_app/explore'
     | '/_app/replay'
+    | '/auth/callback'
     | '/signup/admin'
     | '/_app/admin/clients'
     | '/_app/admin/data-sources'
@@ -253,8 +301,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   GetStartedRoute: typeof GetStartedRoute
   LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  VerifyOtpRoute: typeof VerifyOtpRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   SignupAdminRoute: typeof SignupAdminRoute
 }
 
@@ -274,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/get-started': {
       id: '/get-started'
       path: '/get-started'
@@ -286,6 +345,20 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-otp': {
+      id: '/verify-otp'
+      path: '/verify-otp'
+      fullPath: '/verify-otp'
+      preLoaderRoute: typeof VerifyOtpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/account': {
@@ -322,6 +395,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/replay'
       preLoaderRoute: typeof AppReplayRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/signup/admin': {
       id: '/signup/admin'
@@ -435,8 +515,12 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   GetStartedRoute: GetStartedRoute,
   LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  VerifyOtpRoute: VerifyOtpRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   SignupAdminRoute: SignupAdminRoute,
 }
 export const routeTree = rootRouteImport

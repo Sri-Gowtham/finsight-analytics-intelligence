@@ -25,9 +25,10 @@ interface Seed {
   marketCapCr: number;
   price: number;
   changePct: number;
-  base: Omit<MetricPoint, "quarter">;
+  base: Omit<MetricPoint, "quarter" | "roe" | "revenue" | "profitMargin" | "revenueGrowth"> & Partial<Pick<MetricPoint, "roe" | "revenue" | "profitMargin" | "revenueGrowth">>;
   drift: Partial<Omit<MetricPoint, "quarter">>;
 }
+
 
 const round = (n: number, d = 2) => Math.round(n * 10 ** d) / 10 ** d;
 
@@ -288,14 +289,19 @@ const SEEDS: Seed[] = [
 
 function buildHistory(seed: Seed): MetricPoint[] {
   return QUARTERS.map((quarter, i) => {
-    const point: MetricPoint = { quarter, ...seed.base };
+    const base = { roe: 0, revenue: 0, profitMargin: 0, revenueGrowth: 0, ...seed.base };
+    const point: MetricPoint = { quarter, ...base };
     (Object.keys(seed.drift) as (keyof typeof seed.drift)[]).forEach((key) => {
       const delta = seed.drift[key] ?? 0;
       const wobble = key === "price" ? Math.sin(i * 1.3) * Math.abs(delta) * 0.35 : 0;
-      point[key] = round(seed.base[key] + delta * i + wobble, key === "pat" ? 0 : 2);
+      const baseVal = base[key] ?? 0;
+      (point as unknown as Record<string, unknown>)[key] = round(baseVal + delta * i + wobble, key === "pat" ? 0 : 2);
     });
     point.nnpa = round(Math.max(0.12, point.gnpa * 0.28), 2);
-    point.roa = round(Math.max(0.1, seed.base.roa + (point.pat - seed.base.pat) / seed.base.pat), 2);
+    point.roa = round(Math.max(0.1, base.roa + (point.pat - base.pat) / Math.max(base.pat, 1)), 2);
+    point.roe = round(point.roa * (100 / Math.max(point.car, 10)), 2);
+    point.revenue = round(point.nim * point.advances * 0.01, 2);
+    point.profitMargin = round(point.nim - point.gnpa * 0.6, 2);
     return point;
   });
 }

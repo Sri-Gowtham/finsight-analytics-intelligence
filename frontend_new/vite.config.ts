@@ -14,6 +14,7 @@ export default defineConfig({
   },
   vite: {
     server: {
+      port: 8081,
       proxy: {
         // Proxy all /api/* requests to the backend so the browser never makes a
         // cross-origin fetch — avoids ERR_CONNECTION_REFUSED / CORS issues in dev.

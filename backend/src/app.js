@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import session from 'express-session';
+import passport from 'passport';
 import { corsOptions } from './config/cors.js';
+import { configurePassport } from './config/passport.js';
 import healthRouter from './routes/health.routes.js';
 import authRouter from './routes/auth.routes.js';
 import adminRouter from './routes/admin.routes.js';
@@ -15,6 +18,13 @@ const app = express();
 // ── Global middleware ───────────────────────────────
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'finsight-oauth-secret-key',
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(passport.initialize());
+configurePassport();
 
 // ── Routes ──────────────────────────────────────────
 app.use('/api/health',    healthRouter);

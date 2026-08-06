@@ -221,3 +221,138 @@
   background-clip: text;
   color: transparent;
 }
+
+/* ---- Chat panel ---- */
+
+@utility chat-bubble-ai {
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-foreground);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+  padding: 0.75rem 1rem;
+  max-width: 90%;
+}
+
+@utility chat-bubble-user {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg);
+  padding: 0.75rem 1rem;
+  max-width: 90%;
+  margin-left: auto;
+}
+
+/* ---- Typing indicator ---- */
+
+@utility typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.5rem 0.75rem;
+}
+
+@layer base {
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-muted-foreground);
+    animation: typing-bounce 1.2s infinite ease-in-out;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes typing-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+}
+
+/* ---- Delta indicators ---- */
+
+@utility delta-positive {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+@utility delta-negative {
+  color: var(--color-destructive);
+  font-weight: 600;
+}
+
+/* ---- Quarter stepper ---- */
+
+@utility quarter-stepper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+@layer base {
+  .quarter-step {
+    position: relative;
+    padding-left: 2rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-muted-foreground);
+    transition: color 0.15s ease, background-color 0.15s ease;
+    border-radius: var(--radius-md);
+  }
+  .quarter-step:hover {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+  .quarter-step::before {
+    content: '';
+    position: absolute;
+    left: 0.625rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--color-border);
+    background: var(--color-card);
+    transition: all 0.2s ease;
+  }
+  .quarter-step[data-active="true"] {
+    color: var(--color-primary);
+    font-weight: 700;
+    background-color: var(--color-success-soft);
+  }
+  .quarter-step[data-active="true"]::before {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-success-soft);
+  }
+  .quarter-step[data-visited="true"]::before {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+  }
+  .quarter-stepper::before {
+    content: '';
+    position: absolute;
+    left: calc(0.625rem + 3px);
+    top: 1rem;
+    bottom: 1rem;
+    width: 2px;
+    background: var(--color-border);
+  }
+}
+
+/* ---- Compliance disclaimer ---- */
+
+@utility disclaimer-banner {
+  background-color: var(--color-warning-soft);
+  border: 1px solid var(--color-warning);
+  color: var(--color-foreground);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
