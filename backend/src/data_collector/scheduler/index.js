@@ -13,9 +13,11 @@ export function startScheduler() {
   logger.info(`Initializing Financial Data Scheduler. Interval: ${config.fetchIntervalMs}ms`);
   
   // Run immediately on boot
-  runDataCollectionCycle().catch(err => {
-    logger.error('Failed during initial data collection cycle', err);
-  });
+  setTimeout(() => {
+    runDataCollectionCycle().catch((err) =>
+      console.error('Initial data collection failed:', err)
+    );
+  }, 15000);
 
   // Schedule periodic runs
   intervalId = setInterval(() => {

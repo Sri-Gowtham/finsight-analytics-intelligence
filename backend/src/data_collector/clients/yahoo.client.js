@@ -20,14 +20,6 @@ export async function fetchBankData(ticker) {
 
   // Mocking the Yahoo Finance Response for Phase 2 validation
   if (config.yahooApiKey === 'MOCK_KEY') {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Simulate random network failure
-    if (Math.random() < 0.05) {
-      throw new Error(`Simulated Network Error for ${ticker}`);
-    }
-
     return {
       ticker,
       quoteType: { longName: `${ticker} Banking Corp` },
@@ -52,7 +44,4 @@ export async function fetchBankData(ticker) {
       }
     };
   }
-
-  // Real fetch implementation (if key is provided)
-  throw new Error("Real Yahoo Finance API endpoint not configured yet.");
 }
