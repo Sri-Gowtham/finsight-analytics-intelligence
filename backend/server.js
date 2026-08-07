@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import app from './src/app.js';
 import { pool } from './src/config/db.js';
+import { startScheduler } from './src/data_collector/scheduler/index.js';
 
 const PORT = process.env.PORT || 3001;
 
@@ -15,4 +16,6 @@ try {
 
 app.listen(PORT, () => {
   console.log(`✓ FinSight API listening on port ${PORT}`);
+  // Start the financial data collection scheduler
+  startScheduler();
 });

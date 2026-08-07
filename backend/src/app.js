@@ -11,6 +11,7 @@ import companiesRouter from './routes/companies.routes.js';
 import clientsRouter from './routes/clients.routes.js';
 import whatifRouter from './routes/whatif.routes.js';
 import insightsRouter from './routes/insights.routes.js';
+import rawFinancialsRouter from './routes/raw-financials.routes.js';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/companies', companiesRouter);
 app.use('/api/clients',   clientsRouter);
 app.use('/api/whatif',    whatifRouter);
 app.use('/api/insights',  insightsRouter);
+app.use('/api/raw-financials', rawFinancialsRouter);
 
 // ── Error handling (must be registered last) ────────
 app.use(notFoundHandler);
