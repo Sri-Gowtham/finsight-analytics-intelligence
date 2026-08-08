@@ -122,7 +122,7 @@ function LoginPage() {
 
         <div className="surface p-7 sm:p-8">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.jpeg" alt="FinSight Financial Intelligence" className="size-10 rounded-xl object-cover shadow-[var(--shadow-glow)]" />
+            <img src="/finlogo.jpeg" alt="FinSight Financial Intelligence" className="size-10 rounded-xl object-cover shadow-[var(--shadow-glow)]" />
             <span className="leading-tight">
               <span className="block font-bold">FinSight</span>
               <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
@@ -252,30 +252,7 @@ function LoginPage() {
             )}
           </div>
 
-          <div className="mt-6 rounded-xl border border-border bg-muted/50 p-4">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              <ShieldCheck className="size-3.5" aria-hidden />
-              Provisioned demo accounts
-            </p>
-            <ul className="mt-3 space-y-2">
-              {DEMO_ACCOUNTS.map((account) => (
-                <li key={account.email} className="flex items-center justify-between gap-3">
-                  <span className="min-w-0">
-                    <span className="block text-sm font-medium">{account.role}</span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                      {account.email}
-                    </span>
-                  </span>
-                  <Button type="button" variant="outline" size="sm" onClick={() => useDemo(account.email)}>
-                    Use
-                  </Button>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Shared demo password: <span className="font-mono">{DEMO_PASSWORD}</span>
-            </p>
-          </div>
+
         </div>
       </div>
     </div>

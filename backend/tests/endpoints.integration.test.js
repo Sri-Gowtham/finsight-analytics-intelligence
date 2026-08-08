@@ -144,9 +144,10 @@ describe('Read Endpoints Integration Tests', () => {
   });
 
   describe('GET /api/companies/:id/metrics/history', () => {
-    it('should return 400 if timestamp is missing', async () => {
+    it('should return full history if timestamp is missing', async () => {
       const res = await request.get(`/api/companies/${companyId}/metrics/history`).set('Authorization', `Bearer ${analystToken}`);
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
+      expect(res.body.metrics).toBeDefined();
     });
 
     it('should return 404 if company does not exist', async () => {

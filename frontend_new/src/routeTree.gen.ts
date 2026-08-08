@@ -31,6 +31,9 @@ import { Route as AppApprovalsIndexRouteImport } from './routes/_app/approvals/i
 import { Route as AppApprovalsInsightIdRouteImport } from './routes/_app/approvals/$insightId'
 import { Route as AppApprovalsHistoryRouteImport } from './routes/_app/approvals/history'
 import { Route as AppBanksSymbolRouteImport } from './routes/_app/banks.$symbol'
+import { Route as AppReportsHistoryRouteImport } from './routes/_app/reports/history'
+import { Route as AppReportsNewRouteImport } from './routes/_app/reports/new'
+import { Route as AppReportsReviewRouteImport } from './routes/_app/reports/review'
 import { Route as AppScenariosIndexRouteImport } from './routes/_app/scenarios/index'
 import { Route as AppScenariosHistoryRouteImport } from './routes/_app/scenarios/history'
 
@@ -143,6 +146,21 @@ const AppBanksSymbolRoute = AppBanksSymbolRouteImport.update({
   path: '/banks/$symbol',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReportsHistoryRoute = AppReportsHistoryRouteImport.update({
+  id: '/reports/history',
+  path: '/reports/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsNewRoute = AppReportsNewRouteImport.update({
+  id: '/reports/new',
+  path: '/reports/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsReviewRoute = AppReportsReviewRouteImport.update({
+  id: '/reports/review',
+  path: '/reports/review',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppScenariosIndexRoute = AppScenariosIndexRouteImport.update({
   id: '/scenarios/',
   path: '/scenarios/',
@@ -175,6 +193,9 @@ export interface FileRoutesByFullPath {
   '/approvals/$insightId': typeof AppApprovalsInsightIdRoute
   '/approvals/history': typeof AppApprovalsHistoryRoute
   '/banks/$symbol': typeof AppBanksSymbolRoute
+  '/reports/history': typeof AppReportsHistoryRoute
+  '/reports/new': typeof AppReportsNewRoute
+  '/reports/review': typeof AppReportsReviewRoute
   '/scenarios/history': typeof AppScenariosHistoryRoute
   '/approvals/': typeof AppApprovalsIndexRoute
   '/scenarios/': typeof AppScenariosIndexRoute
@@ -200,6 +221,9 @@ export interface FileRoutesByTo {
   '/approvals/$insightId': typeof AppApprovalsInsightIdRoute
   '/approvals/history': typeof AppApprovalsHistoryRoute
   '/banks/$symbol': typeof AppBanksSymbolRoute
+  '/reports/history': typeof AppReportsHistoryRoute
+  '/reports/new': typeof AppReportsNewRoute
+  '/reports/review': typeof AppReportsReviewRoute
   '/scenarios/history': typeof AppScenariosHistoryRoute
   '/approvals': typeof AppApprovalsIndexRoute
   '/scenarios': typeof AppScenariosIndexRoute
@@ -227,6 +251,9 @@ export interface FileRoutesById {
   '/_app/approvals/$insightId': typeof AppApprovalsInsightIdRoute
   '/_app/approvals/history': typeof AppApprovalsHistoryRoute
   '/_app/banks/$symbol': typeof AppBanksSymbolRoute
+  '/_app/reports/history': typeof AppReportsHistoryRoute
+  '/_app/reports/new': typeof AppReportsNewRoute
+  '/_app/reports/review': typeof AppReportsReviewRoute
   '/_app/scenarios/history': typeof AppScenariosHistoryRoute
   '/_app/approvals/': typeof AppApprovalsIndexRoute
   '/_app/scenarios/': typeof AppScenariosIndexRoute
@@ -254,6 +281,9 @@ export interface FileRouteTypes {
     | '/approvals/$insightId'
     | '/approvals/history'
     | '/banks/$symbol'
+    | '/reports/history'
+    | '/reports/new'
+    | '/reports/review'
     | '/scenarios/history'
     | '/approvals/'
     | '/scenarios/'
@@ -279,6 +309,9 @@ export interface FileRouteTypes {
     | '/approvals/$insightId'
     | '/approvals/history'
     | '/banks/$symbol'
+    | '/reports/history'
+    | '/reports/new'
+    | '/reports/review'
     | '/scenarios/history'
     | '/approvals'
     | '/scenarios'
@@ -305,6 +338,9 @@ export interface FileRouteTypes {
     | '/_app/approvals/$insightId'
     | '/_app/approvals/history'
     | '/_app/banks/$symbol'
+    | '/_app/reports/history'
+    | '/_app/reports/new'
+    | '/_app/reports/review'
     | '/_app/scenarios/history'
     | '/_app/approvals/'
     | '/_app/scenarios/'
@@ -478,6 +514,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBanksSymbolRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/reports/history': {
+      id: '/_app/reports/history'
+      path: '/reports/history'
+      fullPath: '/reports/history'
+      preLoaderRoute: typeof AppReportsHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports/new': {
+      id: '/_app/reports/new'
+      path: '/reports/new'
+      fullPath: '/reports/new'
+      preLoaderRoute: typeof AppReportsNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports/review': {
+      id: '/_app/reports/review'
+      path: '/reports/review'
+      fullPath: '/reports/review'
+      preLoaderRoute: typeof AppReportsReviewRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/scenarios/': {
       id: '/_app/scenarios/'
       path: '/scenarios'
@@ -508,6 +565,9 @@ interface AppRouteChildren {
   AppApprovalsInsightIdRoute: typeof AppApprovalsInsightIdRoute
   AppApprovalsHistoryRoute: typeof AppApprovalsHistoryRoute
   AppBanksSymbolRoute: typeof AppBanksSymbolRoute
+  AppReportsHistoryRoute: typeof AppReportsHistoryRoute
+  AppReportsNewRoute: typeof AppReportsNewRoute
+  AppReportsReviewRoute: typeof AppReportsReviewRoute
   AppScenariosHistoryRoute: typeof AppScenariosHistoryRoute
   AppApprovalsIndexRoute: typeof AppApprovalsIndexRoute
   AppScenariosIndexRoute: typeof AppScenariosIndexRoute
@@ -526,6 +586,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppApprovalsInsightIdRoute: AppApprovalsInsightIdRoute,
   AppApprovalsHistoryRoute: AppApprovalsHistoryRoute,
   AppBanksSymbolRoute: AppBanksSymbolRoute,
+  AppReportsHistoryRoute: AppReportsHistoryRoute,
+  AppReportsNewRoute: AppReportsNewRoute,
+  AppReportsReviewRoute: AppReportsReviewRoute,
   AppScenariosHistoryRoute: AppScenariosHistoryRoute,
   AppApprovalsIndexRoute: AppApprovalsIndexRoute,
   AppScenariosIndexRoute: AppScenariosIndexRoute,

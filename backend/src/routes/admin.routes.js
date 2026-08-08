@@ -11,6 +11,7 @@ import {
   deletePortfolio,
 } from '../controllers/admin.controller.js';
 import clientsRoutes from './clients.routes.js';
+import { pool } from '../config/db.js';
 
 const router = Router();
 
@@ -32,4 +33,27 @@ router.post('/portfolios',      uploadPortfolio);
 router.put('/portfolios/:id',   updatePortfolio);
 router.delete('/portfolios/:id', deletePortfolio);
 
+router.put('/portfolios/:id/assign', 
+  requireAuth, requireRole('Admin'), 
+  async (req, res, next) => {
+    try {
+      const { analyst_id } = req.body;
+      const result = await pool.query(
+        `UPDATE client_portfolios
+         SET analyst_id = $1
+         WHERE id = $2
+         RETURNING *`,
+        [analyst_id || null, req.params.id]
+      );
+      if (!result.rows.length) {
+        return res.status(404).json({ error: 'Portfolio not found' });
+      }
+      return res.json({ success: true, portfolio: result.rows[0] });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 export default router;
+

@@ -13,6 +13,9 @@ import whatifRouter from './routes/whatif.routes.js';
 import insightsRouter from './routes/insights.routes.js';
 import rawFinancialsRouter from './routes/raw-financials.routes.js';
 import marketIntelligenceRoutes from './routes/market-intelligence.routes.js';
+import analysisRouter from './routes/analysis.routes.js';
+import reportsRouter from './routes/reports.routes.js';
+import chatRouter from './routes/chat.routes.js';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
@@ -38,6 +41,9 @@ app.use('/api/whatif',    whatifRouter);
 app.use('/api/insights',  insightsRouter);
 app.use('/api/raw-financials', rawFinancialsRouter);
 app.use('/api/market-intelligence', marketIntelligenceRoutes);
+app.use('/api/analysis',  analysisRouter);
+app.use('/api/reports',   reportsRouter);
+app.use('/api/chat',      chatRouter);
 
 // ── Error handling (must be registered last) ────────
 app.use(notFoundHandler);

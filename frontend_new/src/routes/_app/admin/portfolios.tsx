@@ -1,72 +1,99 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RoleGuard } from "@/components/RoleGuard";
 import { ErrorState, LoadingState, PageHeader } from "@/components/states";
-import { useClients } from "@/lib/queries";
-import { crore, shortDate } from "@/lib/format";
+import { useAdminPortfolios, useAdminDeletePortfolio } from "@/lib/queries";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/admin/portfolios")({
-  head: () => ({
-    meta: [
-      { title: "Client Portfolios — FinSight" },
-      {
-        name: "description",
-        content:
-          "Client portfolio register: assets under advisory, covered NSE-listed banks and assigned analysts for every institutional mandate.",
-      },
-      { property: "og:title", content: "Client Portfolios — FinSight" },
-      { property: "og:description", content: "Institutional mandates, coverage and assignments." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
   component: () => (
     <RoleGuard allow={["admin"]}>
-      <ClientsPage />
+      <PortfoliosPage />
     </RoleGuard>
   ),
 });
 
-function ClientsPage() {
-  const clients = useClients();
+function PortfoliosPage() {
+  const portfolios = useAdminPortfolios();
+  const deletePortfolio = useAdminDeletePortfolio();
+
+  const rows = (portfolios.data ?? []) as any[];
+
+  // Group by client for display
+  const byClient: Record<string, typeof rows> = {};
+  for (const row of rows) {
+    if (!byClient[row.client_name]) byClient[row.client_name] = [];
+    byClient[row.client_name]!.push(row);
+  }
+
 
   return (
     <>
       <PageHeader
         eyebrow="Administration"
-        title="Client portfolios"
-        description="Every advisory mandate with its coverage universe and assigned research team."
+        title="Portfolio Management"
+        description="Manage which banks are tracked in each client portfolio. Add or remove bank assignments."
       />
-      {clients.isError ? (
-        <ErrorState onRetry={() => void clients.refetch()} />
-      ) : clients.isPending ? (
+
+      {portfolios.isError ? (
+        <ErrorState onRetry={() => void portfolios.refetch()} />
+      ) : portfolios.isPending ? (
         <LoadingState rows={3} />
+      ) : Object.keys(byClient).length === 0 ? (
+        <p className="text-sm text-muted-foreground mt-6">
+          No portfolios found.
+        </p>
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
-          {(clients.data ?? []).map((c) => (
-            <li key={c.id} className="surface space-y-3 p-5">
-              <div className="flex items-start justify-between gap-3">
+        <div className="mt-6 space-y-6">
+          {Object.entries(byClient).map(([clientName, clientRows]) => (
+            <div key={clientName} className="surface rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="font-semibold">{c.name}</h2>
+                  <p className="font-semibold">{clientName}</p>
                   <p className="text-xs text-muted-foreground">
-                    {c.type} · onboarded {shortDate(c.onboardedAt)}
+                    {clientRows.length} bank
+                    {clientRows.length !== 1 ? "s" : ""} tracked ·{" "}
+                    Analyst:{" "}
+                    {clientRows[0]?.analyst_name ?? "Unassigned"}
                   </p>
                 </div>
-                <Badge variant="outline">{crore(c.aumCr)} AUA</Badge>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {c.bankSymbols.map((s) => (
-                  <Badge key={s} className="border-transparent bg-secondary text-secondary-foreground">
-                    {s}
-                  </Badge>
+
+              <ul className="space-y-2">
+                {clientRows.map((row) => (
+                  <li
+                    key={row.id}
+                    className="flex items-center justify-between rounded-lg border bg-card px-4 py-2.5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary" className="font-mono text-xs">
+                        {row.ticker}
+                      </Badge>
+                      <span className="text-sm">{row.bank_name}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      disabled={deletePortfolio.isPending}
+                      onClick={() =>
+                        deletePortfolio.mutate(String(row.id), {
+                          onSuccess: () =>
+                            toast.success(`${row.ticker} removed from ${clientName}`),
+                          onError: () =>
+                            toast.error("Failed to remove bank from portfolio"),
+                        })
+                      }
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive/70" />
+                    </Button>
+                  </li>
                 ))}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {c.analystIds.length} analyst{c.analystIds.length === 1 ? "" : "s"} assigned
-              </p>
-            </li>
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </>
   );

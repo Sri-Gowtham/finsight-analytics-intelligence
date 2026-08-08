@@ -52,6 +52,7 @@ export async function listInsightsByStatus(req, res, next) {
 export async function approveInsight(req, res, next) {
   try {
     const { id } = req.params;
+    const { reviewNote } = req.body;
 
     // Verify the insight exists
     const existing = await pool.query(
@@ -68,10 +69,10 @@ export async function approveInsight(req, res, next) {
              approved_at     = NOW(),
              reviewed_by     = $1,
              rejected_at     = NULL,
-             rejection_reason = NULL
+             rejection_reason = $3
        WHERE insight_id = $2
-       RETURNING insight_id, approval_status, approved_at, reviewed_by`,
-      [req.user.user_id, id],
+       RETURNING insight_id, approval_status, approved_at, reviewed_by, rejection_reason`,
+      [req.user.user_id, id, reviewNote || null],
     );
 
     return res.json({ success: true, insight: rows[0] });
@@ -90,11 +91,12 @@ export async function approveInsight(req, res, next) {
 export async function rejectInsight(req, res, next) {
   try {
     const { id } = req.params;
-    const { rejection_reason } = req.body;
+    const { rejection_reason, reviewNote } = req.body;
+    const reason = reviewNote || rejection_reason;
 
     // rejection_reason is required for audit trail
-    if (!rejection_reason || String(rejection_reason).trim() === '') {
-      return res.status(400).json({ error: 'rejection_reason is required' });
+    if (!reason || String(reason).trim() === '') {
+      return res.status(400).json({ error: 'rejection_reason (or reviewNote) is required' });
     }
 
     // Verify the insight exists

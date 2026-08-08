@@ -26,9 +26,10 @@ router.get('/:ticker', requireAuth, requireRole('Analyst', 'CFO', 'Admin'), asyn
          cash_flow,
          fetched_at
        FROM bank_financials_raw
-       WHERE UPPER(ticker) = UPPER($1)
-         AND source = 'indianapi.in'
-       ORDER BY fetch_date DESC
+       WHERE REPLACE(UPPER(ticker), '.NS', '') = UPPER($1)
+       ORDER BY
+         CASE WHEN source = 'indianapi.in' THEN 0 ELSE 1 END,
+         fetch_date DESC
        LIMIT 1`,
       [ticker]
     );
@@ -51,7 +52,7 @@ router.get('/:ticker', requireAuth, requireRole('Analyst', 'CFO', 'Admin'), asyn
 router.get('/', requireAuth, requireRole('Analyst', 'CFO', 'Admin'), async (req, res, next) => {
   try {
     const result = await pool.query(
-      `SELECT DISTINCT ON (ticker)
+      `SELECT DISTINCT ON (REPLACE(UPPER(ticker), '.NS', ''))
          ticker,
          fetch_date,
          source,
@@ -59,8 +60,10 @@ router.get('/', requireAuth, requireRole('Analyst', 'CFO', 'Admin'), async (req,
          company_profile,
          fetched_at
        FROM bank_financials_raw
-       WHERE source = 'indianapi.in'
-       ORDER BY ticker, fetch_date DESC`
+       ORDER BY
+         REPLACE(UPPER(ticker), '.NS', ''),
+         CASE WHEN source = 'indianapi.in' THEN 0 ELSE 1 END,
+         fetch_date DESC`
     );
 
     res.json({ success: true, data: result.rows });

@@ -1,4 +1,5 @@
 import { pool } from '../config/db.js';
+import Groq from 'groq-sdk';
 
 const ALLOWED_METRICS = ['NIM', 'NPA_percent', 'CAR', 'loan_growth'];
 
@@ -72,36 +73,25 @@ export async function createScenario(req, res, next) {
     const delta = hypothetical_value - current_value;
     const percent_change = (delta / current_value) * 100;
 
-    // Call OpenAI
+    // Call Groq
     let generated_text = "";
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content: "You are a financial scenario narrator. You NEVER predict the future and NEVER give investment advice. You only describe the estimated directional impact of a hypothetical input, in 2 short sentences, plain language. You MUST include the exact disclaimer: 'This is a scenario estimate, not a prediction or guarantee.'"
-            },
-            {
-              role: 'user',
-              content: `Metric: ${metric_name}. Current value: ${current_value}. Hypothetical value: ${hypothetical_value}. Delta: ${delta}. Percent change: ${percent_change}%. Sector average: ${sector_avg}. Describe the impact.`
-            }
-          ]
-        })
+      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const completion = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          {
+            role: 'system',
+            content: "You are a financial scenario narrator. You NEVER predict the future and NEVER give investment advice. You only describe the estimated directional impact of a hypothetical input, in 2 short sentences, plain language. You MUST include the exact disclaimer: 'This is a scenario estimate, not a prediction or guarantee.'"
+          },
+          {
+            role: 'user',
+            content: `Metric: ${metric_name}. Current value: ${current_value}. Hypothetical value: ${hypothetical_value}. Delta: ${delta}. Percent change: ${percent_change}%. Sector average: ${sector_avg}. Describe the impact.`
+          }
+        ]
       });
 
-      if (!response.ok) {
-        throw new Error('OpenAI API error');
-      }
-
-      const data = await response.json();
-      generated_text = data.choices[0].message.content;
+      generated_text = completion.choices[0].message.content;
       
       const disclaimer = 'This is a scenario estimate, not a prediction or guarantee.';
       if (!generated_text.toLowerCase().includes(disclaimer.toLowerCase())) {
@@ -109,7 +99,7 @@ export async function createScenario(req, res, next) {
       }
     } catch (apiErr) {
       console.error(apiErr);
-      return res.status(500).json({ error: 'Failed to generate insight from OpenAI' });
+      return res.status(500).json({ error: 'Failed to generate insight from Groq' });
     }
 
     // Save to whatif_scenarios

@@ -19,7 +19,7 @@ function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-async function http<T>(path: string, options: RequestInit = {}, auth = true): Promise<T> {
+export async function http<T>(path: string, options: RequestInit = {}, auth = true): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
@@ -152,11 +152,16 @@ async function fetchBankHistory(companyId: number): Promise<RawMetric[]> {
 }
 
 export async function listBanks(): Promise<Bank[]> {
-  const res = await http<{ companies?: RawCompany[] } | RawCompany[]>("/api/companies");
-  const companies = Array.isArray(res) ? res : (res.companies ?? []);
+  const res = await http<RawCompany[] | { companies: RawCompany[] }>("/api/companies");
+  const companies = Array.isArray(res) ? res : res.companies;
   const banks = await Promise.all(
     companies.map(async (c) => {
-      const history = await fetchBankHistory(c.company_id);
+      let history = [];
+      try {
+        history = await fetchBankHistory(c.company_id);
+      } catch (err) {
+        console.warn(`Could not fetch metrics history for ${c.ticker}:`, err);
+      }
       
       // Deduplicate timestamps: keep latest timestamp per (metric_name, quarter)
       const metricByQuarter = new Map<string, RawMetric>();
@@ -217,37 +222,32 @@ export async function getBank(symbol: string): Promise<Bank> {
   return bank;
 }
 
-type RawPortfolioRow = { id: number; client_name: string; company_id: number; uploaded_by: number };
+type RawPortfolioRow = {
+  id: number;
+  client_name: string;
+  company_id: number;
+  uploaded_by: number;
+  analyst_id?: number | null;
+  analyst_name?: string | null;
+  client_details?: Record<string, unknown> | null;
+  ticker?: string;
+  bank_name?: string;
+};
 
 function normalisePortfolio(rows: RawPortfolioRow[]): ClientPortfolio[] {
-  const byClient = new Map<string, RawPortfolioRow[]>();
-  for (const row of rows) {
-    if (!byClient.has(row.client_name)) byClient.set(row.client_name, []);
-    byClient.get(row.client_name)!.push(row);
-  }
-  return Array.from(byClient.entries()).map(([name, rows]) => ({
-    id: String(rows[0].id),
-    name,
-    type: "Corporate Treasury" as const,
-    aumCr: 0,
-    bankSymbols: rows.map((r) => String(r.company_id)),
-    analystIds: [],
-    onboardedAt: new Date().toISOString(),
-  }));
+  // Return raw rows directly — admin pages consume them as-is
+  // for richer display (ticker, bank_name, client_details, analyst_name)
+  return rows as unknown as ClientPortfolio[];
 }
 
+
+
 export async function listClients(): Promise<ClientPortfolio[]> {
-  const res = await http<{ clients?: Array<{ client_name: string; companies?: Array<{ company_id: number; ticker: string }> }> }>("/api/clients");
-  const list = res.clients ?? [];
-  return list.map((c, idx) => ({
-    id: String(idx + 1),
-    name: c.client_name,
-    type: "Corporate Treasury" as const,
-    aumCr: 0,
-    bankSymbols: c.companies ? c.companies.map((comp) => String(comp.company_id)) : [],
-    analystIds: [],
-    onboardedAt: new Date().toISOString(),
-  }));
+  const res = await http<RawPortfolioRow[] | { portfolios: RawPortfolioRow[] }>(
+    "/api/admin/portfolios"
+  );
+  const rows = Array.isArray(res) ? res : (res as { portfolios: RawPortfolioRow[] }).portfolios;
+  return normalisePortfolio(rows);
 }
 
 export async function listClientsForAnalyst(_analystId: string): Promise<ClientPortfolio[]> {
@@ -277,7 +277,7 @@ export async function listUsers(): Promise<User[]> {
 export async function provisionUser(input: { name: string; email: string; role: Role; title: string; password?: string }): Promise<User> {
   const raw = await http<{ user?: { user_id: number; name: string; email: string; role: string; is_active?: boolean } }>("/api/admin/users/invite", {
     method: "POST",
-    body: JSON.stringify({ name: input.name, email: input.email, role: input.role.charAt(0).toUpperCase() + input.role.slice(1), password: input.password || "Welcome123!" }),
+    body: JSON.stringify({ name: input.name, email: input.email, role: input.role.charAt(0).toUpperCase() + input.role.slice(1), password: input.password || "demo1234" }),
   });
   if (!raw.user) throw new Error("Failed to provision user");
   return normaliseUser(raw.user);
@@ -292,7 +292,19 @@ export async function setUserActive(userId: string, active: boolean): Promise<Us
   return normaliseUser(raw.user);
 }
 
-type RawInsight = { insight_id: number; company_id: number; generated_text: string; source_metric_ids: string | null; insight_type: string | null; created_at: string };
+type RawInsight = { 
+  insight_id: number; 
+  company_id: number; 
+  generated_text: string; 
+  source_metric_ids: string | null; 
+  insight_type: string | null; 
+  created_at: string;
+  approval_status?: "pending" | "approved" | "rejected";
+  approved_at?: string;
+  rejected_at?: string;
+  rejection_reason?: string;
+  reviewed_by?: string;
+};
 
 function normaliseInsight(raw: RawInsight, ticker: string): Insight {
   return {
@@ -307,7 +319,10 @@ function normaliseInsight(raw: RawInsight, ticker: string): Insight {
     confidence: 0.85,
     model: "gpt-4o",
     generatedAt: raw.created_at,
-    status: "pending",
+    status: raw.approval_status ?? "pending",
+    ...(raw.reviewed_by ? { reviewedBy: String(raw.reviewed_by) } : {}),
+    ...(raw.approved_at || raw.rejected_at ? { reviewedAt: raw.approved_at ?? raw.rejected_at } : {}),
+    ...(raw.rejection_reason ? { reviewNote: raw.rejection_reason } : {}),
     trail: raw.source_metric_ids
       ? raw.source_metric_ids.split(",").map((id, i) => ({ step: i + 1, action: "Metric used", detail: `Metric ID ${id.trim()}`, source_metric_id: id.trim(), metricLabel: "metric", value: "" }))
       : [],
@@ -315,6 +330,17 @@ function normaliseInsight(raw: RawInsight, ticker: string): Insight {
 }
 
 export async function listInsights(filters?: { status?: InsightStatus; bankSymbol?: string }): Promise<Insight[]> {
+  // If we only filter by status (CFO Approval History page), try to use the CFO endpoint directly
+  if (filters?.status && !filters?.bankSymbol) {
+    try {
+      const res = await http<{ insights?: RawInsight[] } | RawInsight[]>(`/api/insights?status=${filters.status}`);
+      const raws = Array.isArray(res) ? res : (res.insights ?? []);
+      return raws.map((r: any) => normaliseInsight(r, r.ticker || "UNKNOWN"));
+    } catch (e) {
+      console.error("CFO endpoint failed, falling back to full scan", e);
+    }
+  }
+
   const companiesRes = await http<{ companies?: RawCompany[] } | RawCompany[]>("/api/companies");
   const companies = Array.isArray(companiesRes) ? companiesRes : (companiesRes.companies ?? []);
   const targets = filters?.bankSymbol ? companies.filter((c) => c.ticker === filters.bankSymbol) : companies;
@@ -337,9 +363,30 @@ export async function getInsight(id: string): Promise<Insight> {
   return found;
 }
 
-export async function reviewInsight(input: { id: string; status: Extract<InsightStatus, "approved" | "rejected">; reviewedBy: string; reviewNote: string }): Promise<Insight> {
+export async function reviewInsight(input: {
+  id: string;
+  status: Extract<InsightStatus, "approved" | "rejected">;
+  reviewedBy: string;
+  reviewNote: string;
+}): Promise<Insight> {
+  const endpoint = input.status === "approved"
+    ? `/api/insights/${input.id}/approve`
+    : `/api/insights/${input.id}/reject`;
+
+  await http(endpoint, {
+    method: "PATCH",
+    body: JSON.stringify({ reviewNote: input.reviewNote }),
+  });
+
+  // Return updated insight shape for optimistic UI
   const insight = await getInsight(input.id);
-  return { ...insight, status: input.status, reviewedBy: input.reviewedBy, reviewNote: input.reviewNote, reviewedAt: new Date().toISOString() };
+  return {
+    ...insight,
+    status: input.status,
+    reviewedBy: input.reviewedBy,
+    reviewNote: input.reviewNote,
+    reviewedAt: new Date().toISOString(),
+  };
 }
 
 export function computeScenario(bank: Bank, inputs: ScenarioInput): ScenarioResult {
@@ -427,4 +474,64 @@ export async function updateDataSource(id: string, patch: Partial<Pick<DataSourc
   const ds = STATIC_DATA_SOURCES.find((d) => d.id === id);
   if (!ds) throw new Error("Data source not found");
   return { ...ds, ...patch, lastSyncAt: new Date().toISOString() };
+}
+
+// ============================================================
+// ADD THESE TO THE BOTTOM OF frontend_new/src/lib/api.ts
+// ============================================================
+
+export interface MarketPrice {
+  BSE: string;
+  NSE: string;
+}
+
+export interface StockDetails {
+  low: string;
+  high: string;
+  close: string;
+  price: string;
+  date: string;
+  time: string;
+  ylow: string;
+  yhigh: string;
+  NetIncome: string;
+  marketCap: string;
+}
+
+export interface MarketData {
+  current_price: MarketPrice;
+  market_cap: string;
+  stock_details: StockDetails;
+}
+
+export interface CompanyProfile {
+  name: string;
+  sector: string;
+  industry: string;
+}
+
+export interface MarketIntelligence {
+  ticker: string;
+  fetch_date: string;
+  source: string;
+  market_data: MarketData;
+  company_profile: CompanyProfile;
+  income_statement?: Record<string, unknown>;
+  annual_results?: Record<string, unknown>;
+  cash_flow?: Record<string, unknown>;
+  fetched_at: string;
+}
+
+export async function listMarketIntelligence(): Promise<MarketIntelligence[]> {
+  const res = await http<{ success: boolean; data: MarketIntelligence[] }>(
+    '/api/market-intelligence'
+  );
+  return res.data;
+}
+
+export async function getMarketIntelligence(ticker: string): Promise<MarketIntelligence> {
+  const res = await http<{ success: boolean; data: MarketIntelligence }>(
+    `/api/market-intelligence/${ticker}`
+  );
+  return res.data;
 }

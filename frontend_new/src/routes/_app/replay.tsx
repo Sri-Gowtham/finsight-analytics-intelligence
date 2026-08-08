@@ -96,8 +96,24 @@ function ReplayPage() {
   if (isError) return <ErrorState onRetry={() => void refetch()} />;
   if (isPending || !bank) return <LoadingState rows={4} />;
 
-  const safeIndex = Math.min(index, maxIndex);
-  const point = bank.history[safeIndex]!;
+  const safeIndex = Math.max(0, Math.min(index, maxIndex));
+  const point = bank.history[safeIndex] ?? {
+    quarter: "—",
+    nim: 0,
+    gnpa: 0,
+    nnpa: 0,
+    car: 0,
+    casa: 0,
+    roa: 0,
+    pat: 0,
+    advances: 0,
+    deposits: 0,
+    price: 0,
+    roe: 0,
+    revenue: 0,
+    profitMargin: 0,
+    revenueGrowth: 0,
+  };
   const prevPoint = safeIndex > 0 ? bank.history[safeIndex - 1] : null;
   const visible = bank.history.slice(0, safeIndex + 1);
 

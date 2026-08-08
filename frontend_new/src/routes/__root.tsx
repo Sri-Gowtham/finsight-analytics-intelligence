@@ -106,7 +106,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/logo.jpeg", type: "image/jpeg" },
+      { rel: "icon", href: "/finlogo.jpeg", type: "image/jpeg" },
     ],
   }),
   shellComponent: RootShell,
@@ -129,6 +129,8 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { GlobalChatbot } from "@/components/GlobalChatbot";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -138,6 +140,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster position="top-right" richColors />
+        <GlobalChatbot />
       </AuthProvider>
     </QueryClientProvider>
   );

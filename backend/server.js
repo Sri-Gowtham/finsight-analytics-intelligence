@@ -16,6 +16,5 @@ try {
 
 app.listen(PORT, () => {
   console.log(`✓ FinSight API listening on port ${PORT}`);
-  // Start the financial data collection scheduler
-  startScheduler();
+  // startScheduler(); // disabled — agent/index.js handles data collection
 });

@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Users,
   Briefcase,
+  FileText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
@@ -25,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { NotificationBell } from "@/components/notification-bell";
 
 interface NavItem {
   to: string;
@@ -56,6 +58,13 @@ const NAV: Record<Role, NavGroup[]> = {
         { to: "/scenarios/history", label: "What-If History", icon: History },
       ],
     },
+    {
+      label: "Reports",
+      items: [
+        { to: "/reports/new", label: "Submit Report", icon: FileCheck2 },
+        { to: "/reports/history", label: "My Reports", icon: History },
+      ],
+    },
     { label: "Workspace", items: [{ to: "/account", label: "Account", icon: CircleUser }] },
   ],
   cfo: [
@@ -64,7 +73,13 @@ const NAV: Record<Role, NavGroup[]> = {
       items: [
         { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
         { to: "/approvals", label: "Pending Approvals", icon: FileCheck2 },
-        { to: "/approvals/history", label: "Approved History", icon: History },
+        { to: "/approvals/history", label: "Approval History", icon: History },
+      ],
+    },
+    {
+      label: "Reports",
+      items: [
+        { to: "/reports/review", label: "Report Queue", icon: FileText },
       ],
     },
     { label: "Workspace", items: [{ to: "/account", label: "Account", icon: CircleUser }] },
@@ -90,7 +105,7 @@ function Brand({ compact }: { compact?: boolean }) {
       to="/dashboard"
       className="flex items-center gap-2.5 rounded-lg px-1 py-1 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
     >
-      <img src="/logo.jpeg" alt="FinSight Financial Intelligence" className="size-9 rounded-xl object-cover shadow-[var(--shadow-glow)]" />
+      <img src="/finlogo.jpeg" alt="FinSight Financial Intelligence" className="size-9 rounded-xl object-cover shadow-[var(--shadow-glow)]" />
       {!compact && (
         <span className="leading-tight">
           <span className="block text-base font-bold text-sidebar-foreground">FinSight</span>
@@ -217,6 +232,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <ShieldCheck className="size-3" aria-hidden />
             {roleLabel(role)} workspace
           </Badge>
+          <NotificationBell />
         </header>
 
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">

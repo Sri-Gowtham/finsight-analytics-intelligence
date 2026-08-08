@@ -1,23 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RoleGuard } from "@/components/RoleGuard";
 import { ErrorState, LoadingState, PageHeader } from "@/components/states";
-import { useAdminPortfolios, useAdminCreatePortfolio, useAdminDeletePortfolio } from "@/lib/queries";
+import { useAdminPortfolios } from "@/lib/queries";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import { ClientOnboardingForm } from "@/components/ClientOnboardingForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Building2, Mail, Phone, Users } from "lucide-react";
 
 export const Route = createFileRoute("/_app/admin/clients")({
   component: () => (
@@ -27,90 +14,128 @@ export const Route = createFileRoute("/_app/admin/clients")({
   ),
 });
 
+interface ClientSummary {
+  name: string;
+  type: string;
+  contact_name: string;
+  contact_email: string;
+  contact_phone: string;
+  aum_cr: number;
+  analyst_name: string | null;
+  banks: string[];
+}
+
 function ClientManagementPage() {
   const portfolios = useAdminPortfolios();
-  const deletePortfolio = useAdminDeletePortfolio();
+
+  // Group raw portfolio rows by client_name
+  const clients: ClientSummary[] = Object.values(
+    ((portfolios.data ?? []) as any[]).reduce((acc: Record<string, ClientSummary>, row: any) => {
+      const key = row.client_name;
+      const details = row.client_details ?? {};
+      if (!acc[key]) {
+        acc[key] = {
+          name: key,
+          type: details.type ?? "Advisory Firm",
+          contact_name: details.contact_name ?? "—",
+          contact_email: details.contact_email ?? "—",
+          contact_phone: details.contact_phone ?? "—",
+          aum_cr: details.aum_cr ?? 0,
+          analyst_name: row.analyst_name ?? null,
+          banks: [],
+        };
+      }
+      if (row.ticker) acc[key].banks.push(row.ticker);
+      return acc;
+    }, {})
+  );
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
-        <PageHeader
-          eyebrow="Administration"
-          title="Client Portfolios"
-          description="Manage which banks each client has in their portfolio."
-        />
-        <ClientOnboardingModal />
-      </div>
+      <PageHeader
+        eyebrow="Administration"
+        title="Client Management"
+        description="Manage client firms, their contact information, and analyst assignments."
+      />
 
       {portfolios.isError ? (
         <ErrorState onRetry={() => void portfolios.refetch()} />
       ) : portfolios.isPending ? (
-        <LoadingState rows={3} />
-      ) : (portfolios.data ?? []).length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No client portfolios yet. Add one above.
+        <LoadingState rows={4} />
+      ) : clients.length === 0 ? (
+        <p className="text-sm text-muted-foreground mt-6">
+          No clients found. Add portfolios to see clients here.
         </p>
       ) : (
-        <ul className="space-y-3">
-          {(portfolios.data ?? []).map((c) => (
-            <li
-              key={c.id}
-              className="surface flex flex-wrap items-center justify-between gap-4 p-4"
-            >
-              <div>
-                <p className="font-semibold">{c.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {c.bankSymbols.length} bank
-                  {c.bankSymbols.length !== 1 ? "s" : ""} in portfolio
-                </p>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {c.bankSymbols.map((sym) => (
-                    <Badge key={sym} variant="outline" className="text-xs">
-                      {sym}
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {clients.map((client) => (
+            <Card key={client.name}>
+              <CardContent className="p-5 space-y-4">
+                {/* Header */}
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="font-semibold text-base">{client.name}</p>
+                    <Badge variant="outline" className="mt-1 text-xs">
+                      {client.type}
                     </Badge>
-                  ))}
+                  </div>
+                  {client.aum_cr > 0 && (
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">AUM</p>
+                      <p className="font-semibold text-sm">
+                        ₹{(client.aum_cr / 1000).toFixed(0)}K Cr
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={deletePortfolio.isPending}
-                onClick={() =>
-                  deletePortfolio.mutate(c.id, {
-                    onSuccess: () => toast.success("Portfolio entry removed"),
-                    onError: () => toast.error("Failed to remove entry"),
-                  })
-                }
-              >
-                <Trash2 className="h-4 w-4 text-destructive/80" />
-              </Button>
-            </li>
+
+                {/* Contact */}
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Users className="h-3.5 w-3.5 shrink-0" />
+                    <span>{client.contact_name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{client.contact_email}</span>
+                  </div>
+                  {client.contact_phone !== "—" && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Phone className="h-3.5 w-3.5 shrink-0" />
+                      <span>{client.contact_phone}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Banks covered */}
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1.5 flex items-center gap-1">
+                    <Building2 className="h-3 w-3" />
+                    Banks in portfolio ({client.banks.length})
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {client.banks.map((ticker) => (
+                      <Badge key={ticker} variant="secondary" className="text-xs">
+                        {ticker}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Assigned analyst */}
+                <div className="border-t pt-3">
+                  <p className="text-xs text-muted-foreground">
+                    Assigned Analyst:{" "}
+                    <span className="font-medium text-foreground">
+                      {client.analyst_name ?? "Unassigned"}
+                    </span>
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           ))}
-        </ul>
+        </div>
       )}
     </>
-  );
-}
-
-function ClientOnboardingModal() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Client
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Banking Client Onboarding</DialogTitle>
-        </DialogHeader>
-        <div className="py-4">
-          <ClientOnboardingForm onCancel={() => setOpen(false)} onSuccess={() => setOpen(false)} />
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }

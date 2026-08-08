@@ -3,12 +3,28 @@ import { pool } from '../config/db.js';
 export async function listClients(req, res, next) {
   try {
     const { rows } = await pool.query(
-      `SELECT c.*, u.name as assigned_analyst_name 
-       FROM clients c 
-       LEFT JOIN users u ON c.assigned_analyst_id = u.user_id 
-       ORDER BY c.created_at DESC`
+      `SELECT cp.client_name, cp.company_id, c.name AS company_name, c.ticker
+       FROM client_portfolios cp
+       JOIN companies c ON c.company_id = cp.company_id
+       ORDER BY cp.client_name`
     );
-    return res.json({ clients: rows });
+
+    const grouped = {};
+    for (const r of rows) {
+      if (!grouped[r.client_name]) {
+        grouped[r.client_name] = {
+          client_name: r.client_name,
+          companies: []
+        };
+      }
+      grouped[r.client_name].companies.push({
+        company_id: r.company_id,
+        company_name: r.company_name,
+        ticker: r.ticker
+      });
+    }
+
+    return res.json({ clients: Object.values(grouped) });
   } catch (err) {
     next(err);
   }
@@ -106,6 +122,50 @@ export async function listClientFiles(req, res, next) {
     );
 
     return res.json({ files: rows });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getClientPortfolio(req, res, next) {
+  try {
+    const { clientName } = req.params;
+
+    const portfolioRes = await pool.query(
+      `SELECT
+         cp.id,
+         cp.client_name,
+         cp.company_id,
+         c.name AS company_name,
+         c.ticker
+       FROM client_portfolios cp
+       JOIN companies c ON c.company_id = cp.company_id
+       WHERE cp.client_name = $1
+       ORDER BY c.name`,
+      [clientName]
+    );
+
+    if (portfolioRes.rows.length === 0) {
+      return res.status(404).json({ error: 'Portfolio not found for this client' });
+    }
+
+    const portfolio = await Promise.all(
+      portfolioRes.rows.map(async (item) => {
+        const metricsRes = await pool.query(
+          `SELECT DISTINCT ON (metric_name) metric_name, value, timestamp
+           FROM financial_metrics
+           WHERE company_id = $1
+           ORDER BY metric_name, timestamp DESC`,
+          [item.company_id]
+        );
+        return {
+          ...item,
+          metrics: metricsRes.rows
+        };
+      })
+    );
+
+    return res.json({ portfolio });
   } catch (err) {
     next(err);
   }

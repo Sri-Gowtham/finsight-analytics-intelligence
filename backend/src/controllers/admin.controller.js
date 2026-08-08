@@ -18,7 +18,10 @@ export async function createUser(req, res, next) {
       return res.status(400).json({ error: 'name, email, password, and role are required' });
     }
 
-    if (!VALID_ROLES.includes(role)) {
+    let normalizedRole = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    if (normalizedRole.toUpperCase() === 'CFO') normalizedRole = 'CFO';
+
+    if (!VALID_ROLES.includes(normalizedRole)) {
       return res.status(400).json({ error: `role must be one of: ${VALID_ROLES.join(', ')}` });
     }
 
@@ -34,7 +37,7 @@ export async function createUser(req, res, next) {
       `INSERT INTO users (name, email, password_hash, role)
        VALUES ($1, $2, $3, $4)
        RETURNING user_id, name, email, role`,
-      [name, email, password_hash, role]
+      [name, email, password_hash, normalizedRole]
     );
 
     return res.status(201).json({ user: rows[0] });
@@ -56,7 +59,10 @@ export async function inviteUser(req, res, next) {
       return res.status(400).json({ error: 'name, email, password, and role are required' });
     }
 
-    if (!VALID_ROLES.includes(role)) {
+    let normalizedRole = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    if (normalizedRole.toUpperCase() === 'CFO') normalizedRole = 'CFO';
+
+    if (!VALID_ROLES.includes(normalizedRole)) {
       return res.status(400).json({ error: `role must be one of: ${VALID_ROLES.join(', ')}` });
     }
 
@@ -72,7 +78,7 @@ export async function inviteUser(req, res, next) {
       `INSERT INTO users (name, email, password_hash, role)
        VALUES ($1, $2, $3, $4)
        RETURNING user_id, name, email, role`,
-      [name, email, password_hash, role]
+      [name, email, password_hash, normalizedRole]
     );
 
     // Send welcome email
@@ -174,15 +180,19 @@ export async function deactivateUser(req, res, next) {
 export async function listPortfolios(_req, res, next) {
   try {
     const { rows } = await pool.query(
-      `SELECT
+      `SELECT 
          cp.id,
          cp.client_name,
          cp.company_id,
-         c.name   AS company_name,
+         cp.uploaded_by,
+         cp.analyst_id,
+         cp.client_details,
          c.ticker,
-         cp.uploaded_by
+         c.name as bank_name,
+         u.name as analyst_name
        FROM client_portfolios cp
        JOIN companies c ON c.company_id = cp.company_id
+       LEFT JOIN users u ON u.user_id = cp.analyst_id
        ORDER BY cp.client_name, c.name`
     );
     return res.json({ portfolios: rows });

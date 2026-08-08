@@ -125,7 +125,7 @@ function AdminSignupPage() {
           </Link>
           <div className="flex items-center gap-2.5">
             <img
-              src="/logo.jpeg"
+              src="/finlogo.jpeg"
               alt="FinSight Financial Intelligence"
               className="size-9 rounded-xl object-cover shadow-[var(--shadow-glow)]"
             />

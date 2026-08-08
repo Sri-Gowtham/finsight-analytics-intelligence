@@ -1,25 +1,19 @@
-import pg from 'pg';
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
+import { pool } from './src/config/db.js';
 
-const { Pool } = pg;
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
-
-async function run() {
+async function describeInsights() {
   try {
     const res = await pool.query(`
-      SELECT table_name, column_name, data_type 
+      SELECT column_name, data_type 
       FROM information_schema.columns 
-      WHERE table_schema = 'public'
+      WHERE table_name = 'insights';
     `);
-    console.log(JSON.stringify(res.rows, null, 2));
+    console.table(res.rows);
   } catch (err) {
     console.error(err);
   } finally {
     await pool.end();
   }
 }
-run();
+
+describeInsights();

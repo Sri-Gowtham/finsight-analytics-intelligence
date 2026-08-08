@@ -22,6 +22,7 @@ import {
 import { crore, pct, roleLabel, shortDate, signedPct } from "@/lib/format";
 import { StatCard, StatusBadge } from "@/components/data-display";
 import { AnalystInsightCard } from "@/components/insights";
+import { MarketOverviewPanel } from "@/components/market-intelligence";
 import { EmptyState, ErrorState, LoadingState, PageHeader } from "@/components/states";
 import { ComparisonBarChart } from "@/components/charts";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ function DashboardPage() {
   if (!user) return null;
   return (
     <>
+      <MarketOverviewPanel />
       <PageHeader
         eyebrow={`${roleLabel(user.role)} workspace`}
         title={`Good day, ${user.name.split(" ")[0]}`}

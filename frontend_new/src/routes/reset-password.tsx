@@ -89,7 +89,7 @@ function ResetPasswordPage() {
 
         <div className="surface p-7 sm:p-8">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.jpeg" alt="FinSight" className="size-10 rounded-xl object-cover shadow-[var(--shadow-glow)]" />
+            <img src="/finlogo.jpeg" alt="FinSight" className="size-10 rounded-xl object-cover shadow-[var(--shadow-glow)]" />
             <span className="leading-tight">
               <span className="block font-bold">FinSight</span>
               <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">

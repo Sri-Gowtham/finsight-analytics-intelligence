@@ -178,7 +178,7 @@ function Landing() {
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
             <img
-              src="/logo.jpeg"
+              src="/finlogo.jpeg"
               alt="FinSight Financial Intelligence"
               className="size-9 rounded-xl object-cover shadow-[var(--shadow-glow)]"
             />
@@ -226,13 +226,13 @@ function Landing() {
               AI research, fully auditable
             </Badge>
             <h1 className="text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
-              Banking intelligence your{" "}
-              <span className="text-gradient-emerald">compliance team</span> can defend
+              Raw data to confident calls — <span className="text-primary">In minutes</span>
             </h1>
             <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              FinSight covers NSE-listed Indian banks for consultancy and advisory firms. Analysts
-              get depth and a verifiable trail behind every AI insight. CFOs get clean executive
-              summaries and an approval gate. Nothing reaches a client unreviewed.
+              FinSight gives analysts a verifiable AI insight trail for 
+              every NSE-listed Indian bank — so every recommendation comes 
+              with proof, not just a number. Built for financial 
+              consultancies that move fast without cutting corners.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <Button asChild size="lg">
@@ -538,7 +538,7 @@ function Landing() {
             <div className="space-y-4 md:col-span-1">
               <div className="flex items-center gap-2.5">
                 <img
-                  src="/logo.jpeg"
+                  src="/finlogo.jpeg"
                   alt="FinSight Financial Intelligence"
                   className="size-9 rounded-xl object-cover shadow-[var(--shadow-glow)]"
                 />

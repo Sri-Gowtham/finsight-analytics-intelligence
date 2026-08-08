@@ -6,6 +6,7 @@ import { useBank, useInsights } from "@/lib/queries";
 import { crore, pct, signedPct } from "@/lib/format";
 import { StatCard } from "@/components/data-display";
 import { AiBadge, ConfidenceMeter, DirectionBadge, StatusBadge } from "@/components/data-display";
+import { BankMarketDetail } from "@/components/market-intelligence";
 import { InsightTrail } from "@/components/insights";
 import { TrendAreaChart, TrendLineChart } from "@/components/charts";
 import { Badge } from "@/components/ui/badge";
@@ -100,6 +101,8 @@ function BankDetailPage() {
           </>
         }
       />
+
+      <BankMarketDetail ticker={symbol} />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

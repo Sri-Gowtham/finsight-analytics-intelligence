@@ -61,7 +61,10 @@ export async function login(req, res, next) {
  */
 export async function register(req, res, next) {
   try {
-    const { name, email, password, role = 'Admin' } = req.body;
+    let { name, email, password, role = 'Admin' } = req.body;
+    role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    if (role.toUpperCase() === 'CFO') role = 'CFO';
+    
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }

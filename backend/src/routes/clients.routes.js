@@ -1,13 +1,15 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
+import { requireAuth } from '../middleware/auth.middleware.js';
 import {
   listClients,
   createClient,
   updateClient,
   uploadClientFile,
-  listClientFiles
+  listClientFiles,
+  getClientPortfolio
 } from '../controllers/clients.controller.js';
 
 const router = Router();
@@ -29,10 +31,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit
 
+// Secure all client endpoints
+router.use(requireAuth);
+
 router.get('/', listClients);
 router.post('/', createClient);
 router.patch('/:id', updateClient);
 router.post('/:id/files', upload.single('file'), uploadClientFile);
 router.get('/:id/files', listClientFiles);
+router.get('/:clientName/portfolio', getClientPortfolio);
 
 export default router;

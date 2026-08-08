@@ -15,17 +15,17 @@ export async function initStorage() {
   try {
     await pool.query(`
       ALTER TABLE bank_financials_raw 
-      DROP CONSTRAINT IF EXISTS bank_financials_raw_company_id_fetch_date_key;
+      DROP CONSTRAINT IF EXISTS uniq_ticker_date;
     `);
     await pool.query(`
       ALTER TABLE bank_financials_raw 
-      ADD CONSTRAINT uniq_ticker_date 
-      UNIQUE (ticker, fetch_date);
+      ADD CONSTRAINT uniq_company_fetch_date 
+      UNIQUE (company_id, fetch_date);
     `);
-    log('INFO', 'SYSTEM', 'Added unique constraint uniq_ticker_date to bank_financials_raw');
+    log('INFO', 'SYSTEM', 'Added unique constraint uniq_company_fetch_date to bank_financials_raw');
   } catch (err) {
     if (err.code === '42710') {
-      log('INFO', 'SYSTEM', 'Constraint uniq_ticker_date already exists');
+      log('INFO', 'SYSTEM', 'Constraint uniq_company_fetch_date already exists');
     } else {
       log('WARN', 'SYSTEM', `Could not add constraint (might already exist): ${err.message}`);
     }
@@ -55,7 +55,7 @@ export async function upsertFinancials(record) {
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
     )
-    ON CONFLICT (ticker, fetch_date) DO UPDATE SET
+    ON CONFLICT (company_id, fetch_date) DO UPDATE SET
       company_profile = EXCLUDED.company_profile,
       market_data = EXCLUDED.market_data,
       income_statement = EXCLUDED.income_statement,
