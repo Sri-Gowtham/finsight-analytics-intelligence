@@ -16,6 +16,7 @@ import marketIntelligenceRoutes from './routes/market-intelligence.routes.js';
 import analysisRouter from './routes/analysis.routes.js';
 import reportsRouter from './routes/reports.routes.js';
 import chatRouter from './routes/chat.routes.js';
+import portfoliosRouter from './routes/portfolios.routes.js';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
@@ -44,6 +45,7 @@ app.use('/api/market-intelligence', marketIntelligenceRoutes);
 app.use('/api/analysis',  analysisRouter);
 app.use('/api/reports',   reportsRouter);
 app.use('/api/chat',      chatRouter);
+app.use('/api/portfolios', portfoliosRouter);
 
 // ── Error handling (must be registered last) ────────
 app.use(notFoundHandler);

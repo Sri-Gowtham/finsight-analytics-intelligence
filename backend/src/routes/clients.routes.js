@@ -34,6 +34,19 @@ const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 }
 // Secure all client endpoints
 router.use(requireAuth);
 
+router.get('/list', async (req, res, next) => {
+  try {
+    const { pool } = await import('../config/db.js');
+    const { rows } = await pool.query(
+      `SELECT c.*, u.name as analyst_name
+       FROM clients c
+       LEFT JOIN users u ON u.user_id = c.assigned_analyst_id
+       ORDER BY c.created_at DESC`
+    );
+    return res.json({ clients: rows });
+  } catch (err) { next(err); }
+});
+
 router.get('/', listClients);
 router.post('/', createClient);
 router.patch('/:id', updateClient);

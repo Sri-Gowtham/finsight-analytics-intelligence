@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { login, register, forgotPassword, verifyOtp } from '../controllers/auth.controller.js';
+import { login, register, forgotPassword, verifyOtp, updateProfile } from '../controllers/auth.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:8081';
@@ -10,6 +11,7 @@ router.post('/login', login);
 router.post('/register', register);
 router.post('/forgot-password', forgotPassword);
 router.post('/verify-otp', verifyOtp);
+router.patch('/profile', requireAuth, updateProfile);
 
 // Returns whether Google OAuth credentials are configured in this environment.
 // The frontend uses this to disable the Google button when credentials are absent.

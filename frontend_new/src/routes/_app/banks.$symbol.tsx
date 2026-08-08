@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, FlaskConical, GitCompareArrows, Rewind } from "lucide-react";
+import { ArrowLeft, Download, FlaskConical, GitCompareArrows, Rewind } from "lucide-react";
 import { RoleGuard } from "@/components/RoleGuard";
 import { ErrorState, LoadingState, PageHeader, EmptyState } from "@/components/states";
 import { useBank, useInsights } from "@/lib/queries";
@@ -8,7 +8,7 @@ import { StatCard } from "@/components/data-display";
 import { AiBadge, ConfidenceMeter, DirectionBadge, StatusBadge } from "@/components/data-display";
 import { BankMarketDetail } from "@/components/market-intelligence";
 import { InsightTrail } from "@/components/insights";
-import { TrendAreaChart, TrendLineChart } from "@/components/charts";
+import { TrendAreaChart, TrendLineChart, ChartPanel } from "@/components/charts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,6 +20,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { MetricPoint } from "@/lib/types";
+
+function downloadCSV(symbol: string, history: MetricPoint[]) {
+  const headers = ["Quarter", "NIM (%)", "Gross NPA (%)", "Net NPA (%)", "CAR (%)", "CASA (%)", "ROA (%)", "PAT (₹ Cr)"];
+  const rows = [...history].reverse().map(p => [
+    p.quarter,
+    p.nim.toFixed(2),
+    p.gnpa.toFixed(2),
+    p.nnpa.toFixed(2),
+    p.car.toFixed(2),
+    p.casa.toFixed(2),
+    p.roa.toFixed(2),
+    p.pat.toFixed(0),
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${symbol}_metrics.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export const Route = createFileRoute("/_app/banks/$symbol")({
   head: ({ params }) => ({
@@ -133,57 +156,52 @@ function BankDetailPage() {
 
         <TabsContent value="trends" className="space-y-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            <section className="surface p-5">
-              <h2 className="text-sm font-semibold">Margin and asset quality</h2>
-              <p className="text-xs text-muted-foreground">Percent, by reported quarter</p>
-              <div className="mt-4">
-                <TrendLineChart
-                  data={b.history}
-                  series={[
-                    { key: "nim", label: "NIM" },
-                    { key: "gnpa", label: "Gross NPA" },
-                    { key: "nnpa", label: "Net NPA" },
-                  ]}
-                />
-              </div>
-            </section>
-            <section className="surface p-5">
-              <h2 className="text-sm font-semibold">Profit after tax</h2>
-              <p className="text-xs text-muted-foreground">₹ crore, by reported quarter</p>
-              <div className="mt-4">
-                <TrendAreaChart data={b.history} series={[{ key: "pat", label: "PAT (₹ Cr)" }]} />
-              </div>
-            </section>
-            <section className="surface p-5">
-              <h2 className="text-sm font-semibold">Balance sheet growth</h2>
-              <p className="text-xs text-muted-foreground">₹ crore</p>
-              <div className="mt-4">
-                <TrendAreaChart
-                  data={b.history}
-                  series={[
-                    { key: "advances", label: "Advances" },
-                    { key: "deposits", label: "Deposits" },
-                  ]}
-                />
-              </div>
-            </section>
-            <section className="surface p-5">
-              <h2 className="text-sm font-semibold">Capital and funding mix</h2>
-              <p className="text-xs text-muted-foreground">Percent</p>
-              <div className="mt-4">
-                <TrendLineChart
-                  data={b.history}
-                  series={[
-                    { key: "car", label: "CAR" },
-                    { key: "casa", label: "CASA" },
-                  ]}
-                />
-              </div>
-            </section>
+            <ChartPanel title="Margin and asset quality" subtitle="Percent, by reported quarter">
+              <TrendLineChart
+                data={b.history}
+                series={[
+                  { key: "nim", label: "NIM" },
+                  { key: "gnpa", label: "Gross NPA" },
+                  { key: "nnpa", label: "Net NPA" },
+                ]}
+              />
+            </ChartPanel>
+            <ChartPanel title="Profit after tax" subtitle="₹ crore, by reported quarter">
+              <TrendAreaChart data={b.history} series={[{ key: "pat", label: "PAT (₹ Cr)" }]} />
+            </ChartPanel>
+            <ChartPanel title="Balance sheet growth" subtitle="₹ crore">
+              <TrendAreaChart
+                data={b.history}
+                series={[
+                  { key: "advances", label: "Advances" },
+                  { key: "deposits", label: "Deposits" },
+                ]}
+              />
+            </ChartPanel>
+            <ChartPanel title="Capital and funding mix" subtitle="Percent">
+              <TrendLineChart
+                data={b.history}
+                series={[
+                  { key: "car", label: "CAR" },
+                  { key: "casa", label: "CASA" },
+                ]}
+              />
+            </ChartPanel>
           </div>
         </TabsContent>
 
         <TabsContent value="metrics">
+          <div className="mb-3 flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => downloadCSV(b.symbol, b.history)}
+            >
+              <Download className="size-4" aria-hidden />
+              Download CSV
+            </Button>
+          </div>
           <div className="surface overflow-x-auto p-1">
             <Table>
               <TableHeader>

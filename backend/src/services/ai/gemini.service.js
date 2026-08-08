@@ -30,10 +30,12 @@ export async function callGeminiWithRetry(messages, systemInstruction, options =
 
   // Convert to Gemini format (roles: "user" or "model")
   // System instructions are passed in getGenerativeModel
-  const contents = messages.map(msg => ({
-    role: msg.role === 'ai' || msg.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: msg.content }]
-  }));
+  const contents = messages
+    .filter(msg => msg.role !== 'system')
+    .map(msg => ({
+      role: msg.role === 'ai' || msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }]
+    }));
 
   let delay = initialDelayMs;
   let lastError = null;
@@ -53,6 +55,9 @@ export async function callGeminiWithRetry(messages, systemInstruction, options =
           temperature: temperature,
         }
       });
+      
+      // Prevent unhandled rejection crash if apiCallPromise fails after timeout
+      apiCallPromise.catch(() => {});
 
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error(`Gemini API request timed out after ${timeoutMs}ms`)), timeoutMs)

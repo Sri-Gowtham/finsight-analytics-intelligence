@@ -141,11 +141,25 @@ export function useUpdateDataSource() {
 export function useUpdateProfile() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (vars: { userId: string; name: string; title: string }) =>
-      api.updateProfile(vars.userId, { name: vars.name, title: vars.title }),
+    mutationFn: (vars: {
+      userId: string;
+      name: string;
+      title: string;
+      phone?: string | undefined;
+      department?: string | undefined;
+      location?: string | undefined;
+    }) =>
+      api.updateProfile(vars.userId, {
+        name: vars.name,
+        title: vars.title,
+        ...(vars.phone !== undefined ? { phone: vars.phone } : {}),
+        ...(vars.department !== undefined ? { department: vars.department } : {}),
+        ...(vars.location !== undefined ? { location: vars.location } : {}),
+      }),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.users }),
   });
 }
+
 export const useAdminPortfolios = () =>
   useQuery({ queryKey: ["admin-portfolios"], queryFn: api.listClients });
 
@@ -165,27 +179,22 @@ export function useAdminDeletePortfolio() {
   });
 }
 
-
-// ============================================================
-// ADD THESE TO THE BOTTOM OF frontend_new/src/lib/queries.ts
-// ============================================================
+// ---------------------------------------------------------------- market intelligence
 
 export const useMarketIntelligence = () =>
   useQuery({
-    queryKey: ['market-intelligence'],
+    queryKey: ["market-intelligence"],
     queryFn: api.listMarketIntelligence,
-    staleTime: 5 * 60 * 1000, // 5 min — data refreshes daily from agent
+    staleTime: 5 * 60 * 1000,
   });
 
 export const useBankMarketIntelligence = (ticker: string) =>
   useQuery({
-    queryKey: ['market-intelligence', ticker],
+    queryKey: ["market-intelligence", ticker],
     queryFn: () => api.getMarketIntelligence(ticker),
     enabled: Boolean(ticker),
     staleTime: 5 * 60 * 1000,
   });
-
-// ADD THESE TO THE BOTTOM OF frontend_new/src/lib/queries.ts
 
 // ---------------------------------------------------------------- reports
 
@@ -283,7 +292,7 @@ export const useNotifications = () =>
   useQuery({
     queryKey: ["notifications"],
     queryFn: fetchNotifications,
-    refetchInterval: 60_000, // poll every 60s
+    refetchInterval: 60_000,
   });
 
 export function useSubmitReport() {

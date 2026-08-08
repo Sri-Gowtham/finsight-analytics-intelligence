@@ -166,3 +166,41 @@ export async function verifyOtp(req, res, next) {
     next(err);
   }
 }
+
+/**
+ * PATCH /api/auth/profile
+ * Body: { name, job_title, phone, department, location }
+ * Updates the authenticated user's profile fields.
+ */
+export async function updateProfile(req, res, next) {
+  try {
+    const userId = req.user?.user_id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { name, job_title, phone, department, location } = req.body;
+
+    const { rows } = await pool.query(
+      `UPDATE users
+       SET
+         name       = COALESCE($1, name),
+         job_title  = COALESCE($2, job_title),
+         phone      = COALESCE($3, phone),
+         department = COALESCE($4, department),
+         location   = COALESCE($5, location)
+       WHERE user_id = $6
+       RETURNING user_id, name, email, role, is_active, job_title, phone, department, location`,
+      [name || null, job_title || null, phone || null, department || null, location || null, userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.json({ success: true, user: rows[0] });
+  } catch (err) {
+    next(err);
+  }
+}
+

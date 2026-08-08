@@ -46,9 +46,19 @@ export interface Session {
   issuedAt: string;
 }
 
-function decodeJwtPayload(token: string): Record<string, unknown> | null {
+export interface JwtPayload {
+  [key: string]: unknown;
+  exp?: number;
+  user_id?: number;
+  name?: string;
+  email?: string;
+  role?: string;
+}
+
+function decodeJwtPayload(token: string): JwtPayload | null {
   try {
-    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const base64 = token.split(".")[1]?.replace(/-/g, "+").replace(/_/g, "/");
+    if (!base64) return null;
     return JSON.parse(atob(base64));
   } catch {
     return null;
@@ -100,15 +110,15 @@ export function currentUserSync(): User | null {
     localStorage.removeItem(TOKEN_KEY);
     return null;
   }
-  if (!payload.exp || typeof payload.exp !== "number" || Date.now() / 1000 > payload.exp) {
+  if (!payload["exp"] || typeof payload["exp"] !== "number" || Date.now() / 1000 > payload["exp"]) {
     localStorage.removeItem(TOKEN_KEY);
     return null;
   }
   return {
-    id: String(payload.user_id),
-    name: String(payload.name ?? ""),
-    email: String(payload.email ?? ""),
-    role: normaliseRole(String(payload.role ?? "")),
+    id: String(payload["user_id"]),
+    name: String(payload["name"] ?? ""),
+    email: String(payload["email"] ?? ""),
+    role: normaliseRole(String(payload["role"] ?? "")),
     firm: "FinSight Client Firm",
     title: "",
     active: true, // token assumes active
@@ -117,13 +127,26 @@ export function currentUserSync(): User | null {
   };
 }
 
-export async function updateProfile(_userId: string, patch: Pick<User, "name" | "title">): Promise<User> {
-  const current = currentUserSync();
-  if (!current) throw new Error("Not authenticated");
-  return { ...current, ...patch };
+export async function updateProfile(userId: string, patch: { name: string; title: string; phone?: string; department?: string; location?: string }): Promise<User> {
+  const res = await http<{ success: boolean; user: { user_id: number; name: string; email: string; role: string; is_active?: boolean; job_title?: string; phone?: string; department?: string; location?: string } }>("/api/auth/profile", {
+    method: "PATCH",
+    body: JSON.stringify({ name: patch.name, job_title: patch.title, phone: patch.phone, department: patch.department, location: patch.location }),
+  });
+  const raw = res.user;
+  return {
+    id: String(raw.user_id),
+    name: raw.name,
+    email: raw.email,
+    role: normaliseRole(raw.role),
+    firm: "FinSight Client Firm",
+    title: raw.job_title ?? "",
+    active: raw.is_active ?? true,
+    clientIds: [],
+    createdAt: new Date().toISOString(),
+  };
 }
 
-type RawCompany = { company_id: number; name: string; ticker: string; sector: string; exchange: string };
+type RawCompany = { company_id: number; name: string; ticker: string; sector: string; exchange: string; segment?: string };
 type RawMetric = { metric_id: number; metric_name: string; value: string; timestamp: string };
 
 function buildMetricPoint(quarter: string, metrics: RawMetric[]): import("./types").MetricPoint {
@@ -156,7 +179,7 @@ export async function listBanks(): Promise<Bank[]> {
   const companies = Array.isArray(res) ? res : res.companies;
   const banks = await Promise.all(
     companies.map(async (c) => {
-      let history = [];
+      let history: RawMetric[] = [];
       try {
         history = await fetchBankHistory(c.company_id);
       } catch (err) {
@@ -195,11 +218,12 @@ export async function listBanks(): Promise<Bank[]> {
       const quarters = Array.from(byQuarter.keys()).sort((a, b) => {
         const [qa, ya] = a.split(" ");
         const [qb, yb] = b.split(" ");
-        if (ya !== yb) return ya.localeCompare(yb);
-        return qa.localeCompare(qb);
+        if (ya && yb && ya !== yb) return ya.localeCompare(yb);
+        if (qa && qb) return qa.localeCompare(qb);
+        return 0;
       });
       
-      const historyPoints = quarters.map((q) => buildMetricPoint(q, byQuarter.get(q)!));
+      const historyPoints: import("./types").MetricPoint[] = quarters.map((q) => buildMetricPoint(q, byQuarter.get(q)!));
       // Compute quarter-over-quarter revenue growth
       for (let i = 1; i < historyPoints.length; i++) {
         const prevPt = historyPoints[i - 1];
@@ -209,7 +233,7 @@ export async function listBanks(): Promise<Bank[]> {
         }
       }
       const latest = historyPoints.at(-1) ?? buildMetricPoint("—", []);
-      return { symbol: c.ticker, name: c.name, segment: "Private" as const, marketCapCr: 0, price: 0, changePct: 0, latest, history: historyPoints } satisfies Bank;
+      return { symbol: c.ticker, name: c.name, segment: ((c.segment || c.sector || "Private") as Bank["segment"]), marketCapCr: 0, price: 0, changePct: 0, latest, history: historyPoints } satisfies Bank;
     }),
   );
   return banks;
@@ -243,15 +267,51 @@ function normalisePortfolio(rows: RawPortfolioRow[]): ClientPortfolio[] {
 
 
 export async function listClients(): Promise<ClientPortfolio[]> {
-  const res = await http<RawPortfolioRow[] | { portfolios: RawPortfolioRow[] }>(
-    "/api/admin/portfolios"
-  );
-  const rows = Array.isArray(res) ? res : (res as { portfolios: RawPortfolioRow[] }).portfolios;
-  return normalisePortfolio(rows);
+  try {
+    // Admin path — returns { portfolios: [...] }
+    const res = await http<{ portfolios: RawPortfolioRow[] }>(
+      "/api/admin/portfolios"
+    );
+    const rows = Array.isArray(res)
+      ? (res as RawPortfolioRow[])
+      : res.portfolios ?? [];
+    return normalisePortfolio(rows);
+  } catch {
+    // Analyst/CFO path — returns { clients: [{ client_name, companies: [] }] }
+    const res = await http<{
+      clients: Array<{
+        client_name: string;
+        companies: Array<{
+          company_id: number;
+          company_name: string;
+          ticker: string;
+        }>;
+      }>;
+    }>("/api/clients");
+
+    // Flatten to RawPortfolioRow shape
+    const rows: RawPortfolioRow[] = [];
+    for (const client of res.clients ?? []) {
+      for (const company of client.companies ?? []) {
+        rows.push({
+          id: company.company_id,
+          client_name: client.client_name,
+          company_id: company.company_id,
+          uploaded_by: 0,
+          ticker: company.ticker,
+          bank_name: company.company_name,
+        });
+      }
+    }
+    return normalisePortfolio(rows);
+  }
 }
 
 export async function listClientsForAnalyst(_analystId: string): Promise<ClientPortfolio[]> {
-  return listClients();
+  // Use non-admin /api/portfolios endpoint — accessible to Analyst + CFO + Admin
+  const res = await http<{ portfolios: RawPortfolioRow[] } | RawPortfolioRow[]>("/api/portfolios");
+  const rows = Array.isArray(res) ? res : ((res as { portfolios: RawPortfolioRow[] }).portfolios ?? []);
+  return normalisePortfolio(rows);
 }
 
 export async function saveClient(input: Omit<ClientPortfolio, "id" | "onboardedAt"> & { id?: string }): Promise<ClientPortfolio> {
@@ -292,18 +352,18 @@ export async function setUserActive(userId: string, active: boolean): Promise<Us
   return normaliseUser(raw.user);
 }
 
-type RawInsight = { 
-  insight_id: number; 
-  company_id: number; 
-  generated_text: string; 
-  source_metric_ids: string | null; 
-  insight_type: string | null; 
+type RawInsight = {
+  insight_id: number;
+  company_id: number;
+  generated_text: string;
+  source_metric_ids: string | null;
+  insight_type: string | null;
   created_at: string;
-  approval_status?: "pending" | "approved" | "rejected";
-  approved_at?: string;
-  rejected_at?: string;
-  rejection_reason?: string;
-  reviewed_by?: string;
+  approval_status?: string | null;
+  approved_at?: string | null;
+  rejected_at?: string | null;
+  rejection_reason?: string | null;
+  reviewed_by?: number | null;
 };
 
 function normaliseInsight(raw: RawInsight, ticker: string): Insight {
@@ -319,10 +379,18 @@ function normaliseInsight(raw: RawInsight, ticker: string): Insight {
     confidence: 0.85,
     model: "gpt-4o",
     generatedAt: raw.created_at,
-    status: raw.approval_status ?? "pending",
+    status: (raw.approval_status === "approved"
+      ? "approved"
+      : raw.approval_status === "rejected"
+      ? "rejected"
+      : "pending") as InsightStatus,
     ...(raw.reviewed_by ? { reviewedBy: String(raw.reviewed_by) } : {}),
-    ...(raw.approved_at || raw.rejected_at ? { reviewedAt: raw.approved_at ?? raw.rejected_at } : {}),
-    ...(raw.rejection_reason ? { reviewNote: raw.rejection_reason } : {}),
+    ...(raw.approved_at ?? raw.rejected_at
+      ? { reviewedAt: (raw.approved_at ?? raw.rejected_at) as string }
+      : {}),
+    ...(raw.rejection_reason
+      ? { reviewNote: raw.rejection_reason }
+      : {}),
     trail: raw.source_metric_ids
       ? raw.source_metric_ids.split(",").map((id, i) => ({ step: i + 1, action: "Metric used", detail: `Metric ID ${id.trim()}`, source_metric_id: id.trim(), metricLabel: "metric", value: "" }))
       : [],
@@ -378,14 +446,38 @@ export async function reviewInsight(input: {
     body: JSON.stringify({ reviewNote: input.reviewNote }),
   });
 
-  // Return updated insight shape for optimistic UI
-  const insight = await getInsight(input.id);
+  const res = await http<{ insight: Record<string, unknown> }>(
+    `/api/insights/${input.id}`
+  );
+  const raw = res.insight;
+
+  // Map backend field names to frontend Insight type
+  // Backend uses: approval_status, approved_at, rejection_reason
+  const backendStatus = String(raw["approval_status"] ?? "pending");
+  const mappedStatus: InsightStatus =
+    backendStatus === "approved" ? "approved"
+    : backendStatus === "rejected" ? "rejected"
+    : "pending";
+
   return {
-    ...insight,
-    status: input.status,
+    id: String(raw["insight_id"]),
+    bankSymbol: String(raw["ticker"] ?? ""),
+    title: String(raw["insight_type"] ?? "AI Insight"),
+    analystBody: String(raw["generated_text"] ?? ""),
+    executiveSummary: String(raw["generated_text"] ?? ""),
+    narrativeBasis: [],
+    category: "Profitability",
+    direction: "neutral",
+    confidence: 0.85,
+    model: "groq",
+    generatedAt: String(raw["created_at"] ?? ""),
+    status: mappedStatus,
     reviewedBy: input.reviewedBy,
     reviewNote: input.reviewNote,
-    reviewedAt: new Date().toISOString(),
+    reviewedAt: String(
+      raw["approved_at"] ?? raw["rejected_at"] ?? new Date().toISOString()
+    ),
+    trail: [],
   };
 }
 
@@ -462,8 +554,33 @@ export async function runWhatIfChat(
 }
 
 const STATIC_DATA_SOURCES: DataSource[] = [
-  { id: "ds-1", name: "NSE Quarterly Filings", kind: "Filings", endpoint: "manual/csv", status: "connected", refreshCron: "0 9 * * *", lastSyncAt: new Date().toISOString() },
-  { id: "ds-2", name: "OpenAI GPT-4o", kind: "AI Model", endpoint: "https://api.openai.com/v1", status: "connected", refreshCron: "on-demand", lastSyncAt: new Date().toISOString() },
+  {
+    id: "ds-1",
+    name: "indianapi.in",
+    kind: "Market Data",
+    endpoint: "https://indianapi.in/api",
+    status: "connected",
+    refreshCron: "0 9 * * *",
+    lastSyncAt: new Date().toISOString(),
+  },
+  {
+    id: "ds-2",
+    name: "Groq LLM",
+    kind: "AI Model",
+    endpoint: "https://api.groq.com/openai/v1",
+    status: "connected",
+    refreshCron: "on-demand",
+    lastSyncAt: new Date().toISOString(),
+  },
+  {
+    id: "ds-3",
+    name: "Google Gemini",
+    kind: "AI Model",
+    endpoint: "https://generativelanguage.googleapis.com",
+    status: "connected",
+    refreshCron: "on-demand",
+    lastSyncAt: new Date().toISOString(),
+  },
 ];
 
 export async function listDataSources(): Promise<DataSource[]> {

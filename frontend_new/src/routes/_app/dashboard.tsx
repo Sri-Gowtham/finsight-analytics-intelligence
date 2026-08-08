@@ -89,7 +89,7 @@ function AnalystDashboard({ analystId }: { analystId: string }) {
   const bySymbol = new Map<string, Bank>((banks.data ?? []).map((b) => [b.symbol, b]));
   const portfolios = clients.data ?? [];
   const aum = portfolios.reduce((sum, c) => sum + c.aumCr, 0);
-  const covered = new Set(portfolios.flatMap((c) => c.bankSymbols));
+  const covered = new Set(portfolios.flatMap((c) => c.bankSymbols ?? [(c as any).ticker]));
   const pending = (insights.data ?? []).filter((i) => i.status === "pending");
 
   return (
@@ -137,7 +137,7 @@ function AnalystDashboard({ analystId }: { analystId: string }) {
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
             {portfolios.map((client) => {
-              const holdings = client.bankSymbols
+              const holdings = (client.bankSymbols ?? [(client as any).ticker])
                 .map((s) => bySymbol.get(s))
                 .filter((b): b is Bank => Boolean(b));
               const avgChange =
@@ -146,7 +146,7 @@ function AnalystDashboard({ analystId }: { analystId: string }) {
                 <article key={client.id} className="surface p-5">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-semibold">{client.name}</h3>
+                      <h3 className="font-semibold">{client.name ?? (client as any).client_name}</h3>
                       <p className="text-xs text-muted-foreground">
                         {client.type} · onboarded {shortDate(client.onboardedAt)}
                       </p>

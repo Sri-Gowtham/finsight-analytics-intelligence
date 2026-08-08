@@ -104,11 +104,18 @@ function ProfileTab({ user, refresh }: { user: any; refresh: any }) {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await update.mutateAsync({ userId: user.id, name: name.trim(), title: title.trim() });
+      await update.mutateAsync({
+        userId: user.id,
+        name: name.trim(),
+        title: title.trim(),
+        phone: phone.trim() || undefined,
+        department: department.trim() || undefined,
+        location: location.trim() || undefined,
+      });
       refresh?.();
       toast.success("Profile changes saved successfully");
-    } catch {
-      toast.success("Changes saved locally (some fields not supported by backend)");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to save profile changes");
     }
   };
 

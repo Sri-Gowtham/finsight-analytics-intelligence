@@ -32,17 +32,29 @@ export async function listClients(req, res, next) {
 
 export async function createClient(req, res, next) {
   try {
-    const { name, type, contact_name, contact_email, contact_phone, assigned_analyst_id, notes } = req.body;
+    const { 
+      name, type, contact_name, contact_email, contact_phone, assigned_analyst_id, notes,
+      aum, investment_mandate, risk_profile, preferred_banks, reporting_frequency, compliance_notes, holdings
+    } = req.body;
     
     if (!name || !contact_name || !contact_email) {
       return res.status(400).json({ error: 'name, contact_name, and contact_email are required' });
     }
 
     const { rows } = await pool.query(
-      `INSERT INTO clients (name, type, contact_name, contact_email, contact_phone, assigned_analyst_id, notes) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7) 
+      `INSERT INTO clients (
+         name, type, contact_name, contact_email, contact_phone, assigned_analyst_id, notes,
+         aum, investment_mandate, risk_profile, preferred_banks, reporting_frequency, compliance_notes, holdings
+       ) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
        RETURNING *`,
-      [name, type, contact_name, contact_email, contact_phone, assigned_analyst_id || null, notes]
+      [
+        name, type, contact_name, contact_email, contact_phone, assigned_analyst_id || null, notes,
+        aum || null, investment_mandate || null, risk_profile || null, 
+        preferred_banks ? JSON.stringify(preferred_banks) : null, 
+        reporting_frequency || null, compliance_notes || null, 
+        holdings ? JSON.stringify(holdings) : null
+      ]
     );
 
     return res.status(201).json({ client: rows[0] });

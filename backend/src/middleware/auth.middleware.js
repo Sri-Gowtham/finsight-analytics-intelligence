@@ -27,6 +27,26 @@ export function requireAuth(req, res, next) {
 }
 
 /**
+ * Optional Auth middleware.
+ * Attaches req.user if a valid token is provided, but does not error if missing.
+ */
+export function optionalAuth(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header?.startsWith('Bearer ')) {
+    return next();
+  }
+  
+  const token = header.split(' ')[1];
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = { user_id: payload.user_id, role: payload.role };
+  } catch (err) {
+    // ignore token errors for optional auth
+  }
+  next();
+}
+
+/**
  * Returns a middleware that checks req.user.role is in the allowed list.
  * Must be used AFTER requireAuth.
  *

@@ -189,10 +189,10 @@ export function BankMarketDetail({ ticker }: { ticker: string }) {
     );
   }
 
-  const md = data.market_data as Record<string, unknown>;
-  const cp = data.company_profile as Record<string, unknown>;
-  const is_stmt = data.income_statement as Record<string, unknown> | null;
-  const cf = data.cash_flow as Record<string, unknown> | null;
+  const md = data.market_data as unknown as Record<string, unknown>;
+  const cp = data.company_profile as unknown as Record<string, unknown>;
+  const is_stmt = data.income_statement as unknown as Record<string, unknown> | null;
+  const cf = data.cash_flow as unknown as Record<string, unknown> | null;
 
   const nsePrice = parsePrice(md?.["current_price"] ?? md?.["currentPrice"]);
   const cpRaw = (md?.["current_price"] ?? md?.["currentPrice"]) as { [k: string]: string } | undefined;

@@ -1,40 +1,32 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { optionalAuth } from '../middleware/auth.middleware.js';
 import { callGeminiWithRetry } from '../services/ai/gemini.service.js';
 
 const router = Router();
 
-const SYSTEM_PROMPT = `You are FinSight Assistant.
+const getSystemPrompt = (role) => `You are FinSight Assistant, a financial intelligence platform assistant for NSE-listed Indian banking coverage.
 
-Your sole purpose is to help users navigate and understand the FinSight platform.
+Keep responses concise, direct, FinSight-specific, conversational, and actionable (1-4 short paragraphs or bullets).
+Do NOT generate long generic tutorials.
 
-You can explain:
-- Login
-- Dashboard
-- Analyst features
-- CFO features
-- Admin features
-- Reports
-- Insights
-- Approvals
-- Approval History
-- What-if Analysis
-- Historical Replay
-- Peer Comparison
-- Account Settings
-- Platform workflows
+The user's current role is: ${role || 'Not authenticated'}. If they are authenticated, tailor your instructions to their workspace.
 
-Do not perform financial analysis.
-Do not provide investment advice.
-Do not predict financial performance.
-Do not fabricate platform features.
+FinSight Platform Areas:
+PUBLIC: Landing page, Capabilities, Why FinSight, Pricing, Contact, Sign in
+ANALYST WORKSPACE: Dashboard, Peer Comparison, Historical Replay, What-if Analysis, Reports, Insights, Account Settings
+CFO WORKSPACE: Dashboard, Pending Approvals, Approval History, Reports, Insights, Account Settings
+ADMIN WORKSPACE: Dashboard, Client Management, User Management, Insights/Reports management, Account Settings, Administrative features
 
-If a user asks for financial analysis, explain that FinSight Assistant is only for platform navigation and direct them to the appropriate analysis feature.`;
+STRICT BOUNDARIES:
+- You are ONLY a FinSight platform navigation/help assistant.
+- You can explain where a feature is, what it does, how to navigate, what different roles can access, and how workflows operate.
+- You MUST NOT provide investment advice, recommend stocks, predict stock prices, perform financial analysis, invent features, or invent URLs.
+- For financial-analysis questions, respond exactly with: "That analysis is handled inside FinSight's financial analysis features. I can help you find the right feature, but I can't provide investment advice here."`;
 
 // Simple in-memory rate limiter for public chatbot endpoint
 const chatRateLimitMap = new Map();
 const RATE_LIMIT_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS = 5; // 5 requests per minute
+const MAX_REQUESTS = 50; // increased for testing
 
 const chatRateLimiter = (req, res, next) => {
   const ip = req.ip || req.connection.remoteAddress;
@@ -61,7 +53,7 @@ const chatRateLimiter = (req, res, next) => {
 };
 
 // Removed requireAuth to allow public users (e.g. landing page) to ask for platform help
-router.post('/', chatRateLimiter, async (req, res, next) => {
+router.post('/', chatRateLimiter, optionalAuth, async (req, res, next) => {
   try {
     const { message, history = [] } = req.body;
 
@@ -73,7 +65,7 @@ router.post('/', chatRateLimiter, async (req, res, next) => {
     }
 
     // Build conversation — limit to last 6 messages to keep tokens low
-    const recentHistory = history.slice(-6);
+    const recentHistory = history.filter(m => m.role !== 'system').slice(-6);
     const messages = [
       ...recentHistory.map((m) => ({
         role: m.role,
@@ -82,8 +74,8 @@ router.post('/', chatRateLimiter, async (req, res, next) => {
       { role: 'user', content: message.trim() },
     ];
 
-    const reply = await callGeminiWithRetry(messages, SYSTEM_PROMPT, {
-      model: 'gemini-flash-latest',
+    const reply = await callGeminiWithRetry(messages, getSystemPrompt(req.user?.role), {
+      model: 'gemini-1.5-flash',
       temperature: 0.3,
     });
 

@@ -18,6 +18,52 @@ import {
 } from "@/components/charts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
+function exportComparisonCSV(banks: import("@/lib/types").Bank[]) {
+  if (!banks.length) return;
+
+  const headers = [
+    "Bank",
+    "Ticker",
+    "NIM (%)",
+    "Gross NPA (%)",
+    "CAR (%)",
+    "Loan Growth (%)",
+    "ROA (%)",
+    "Price (₹)",
+    "52W High (₹)",
+    "52W Low (₹)",
+  ];
+
+  const rows = banks.map((b) => [
+    b.name,
+    b.symbol,
+    b.latest.nim ?? "",
+    b.latest.gnpa ?? "",
+    b.latest.car ?? "",
+    b.latest.gnpa ?? "",
+    b.latest.roa ?? "",
+    b.price ?? "",
+    b.latest.nim ?? "",
+    b.latest.gnpa ?? "",
+  ]);
+
+  const csv = [headers, ...rows]
+    .map((row) =>
+      row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+    )
+    .join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `finsight-peer-comparison-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 import {
   Select,
   SelectContent,
@@ -181,9 +227,14 @@ function ComparePage() {
         description={`Select up to ${MAX} institutions to compare across margin, returns, growth and risk profiles.`}
         actions={
           selected.length ? (
-            <Button variant="outline" size="sm" onClick={() => setSelected([])}>
-              Clear selection
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => exportComparisonCSV(chosen)}>
+                <Download className="size-4 mr-1.5" />Export CSV
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setSelected([])}>
+                Clear selection
+              </Button>
+            </div>
           ) : null
         }
       />

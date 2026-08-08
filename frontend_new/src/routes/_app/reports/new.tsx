@@ -78,8 +78,8 @@ function NewReportPage() {
 
   // Unique client names from portfolios
   const clientOptions = Array.from(
-    new Set((clients.data ?? []).map((c) => c.name))
-  );
+    new Set((clients.data ?? []).map((c) => (c as any).client_name ?? c.name))
+  ).filter(Boolean) as string[];
 
   return (
     <>
