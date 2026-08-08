@@ -3,7 +3,7 @@ import app from './src/app.js';
 import { pool } from './src/config/db.js';
 import { startScheduler } from './src/data_collector/scheduler/index.js';
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001; // restart
 
 // Verify DB connectivity on startup, but don't crash — the health route
 // will report the real status and Render/Railway will restart if needed.
