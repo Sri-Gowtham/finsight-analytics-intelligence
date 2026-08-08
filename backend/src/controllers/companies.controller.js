@@ -132,7 +132,8 @@ export async function getInsights(req, res, next) {
     }
 
     const { rows } = await pool.query(
-      `SELECT insight_id, generated_text, source_metric_ids, created_at
+      `SELECT insight_id, generated_text, source_metric_ids, created_at,
+              approval_status, approved_at, rejected_at, rejection_reason, reviewed_by
        FROM   insights
        WHERE  company_id = $1
        ORDER  BY created_at DESC`,
@@ -141,9 +142,15 @@ export async function getInsights(req, res, next) {
 
     // Shape response based on role
     if (req.user.role === 'CFO') {
-      const shaped = rows.map(({ generated_text, created_at }) => ({
+      const shaped = rows.map(({ insight_id, generated_text, created_at, approval_status, approved_at, rejected_at, rejection_reason, reviewed_by }) => ({
+        insight_id,
         generated_text,
         created_at,
+        approval_status,
+        approved_at,
+        rejected_at,
+        rejection_reason,
+        reviewed_by
       }));
       return res.json({ company_id: Number(id), insights: shaped });
     }

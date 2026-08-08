@@ -15,7 +15,7 @@ function getGeminiClient() {
 
 export async function callGeminiWithRetry(messages, systemInstruction, options = {}) {
   const {
-    model = 'gemini-1.5-flash',
+    model = 'gemini-3.5-flash',
     temperature = 0.3,
     maxRetries = 3,
     initialDelayMs = 1000,

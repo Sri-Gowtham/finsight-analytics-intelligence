@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js",
+    "dev": "nodemon --ignore 'node_modules/*' --ignore '*.test.js' server.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --forceExit --detectOpenHandles"
   },
   "keywords": [

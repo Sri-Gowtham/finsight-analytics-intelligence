@@ -368,7 +368,7 @@ type RawInsight = {
 
 function normaliseInsight(raw: RawInsight, ticker: string): Insight {
   return {
-    id: String(raw.insight_id),
+    id: String(raw.insight_id ?? (raw as any).id),
     bankSymbol: ticker,
     title: raw.insight_type ?? "AI Insight",
     analystBody: raw.generated_text,
@@ -425,6 +425,14 @@ export async function listInsights(filters?: { status?: InsightStatus; bankSymbo
 }
 
 export async function getInsight(id: string): Promise<Insight> {
+  try {
+    const res = await http<{ insight: RawInsight & { ticker?: string } }>(`/api/insights/${id}`);
+    if (res.insight) {
+      return normaliseInsight(res.insight, res.insight.ticker || "UNKNOWN");
+    }
+  } catch (e) {
+    console.warn("Failed to fetch single insight, falling back to list", e);
+  }
   const all = await listInsights();
   const found = all.find((i) => i.id === id);
   if (!found) throw new Error("Insight not found.");

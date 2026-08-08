@@ -93,17 +93,17 @@ function ReviewPage() {
           <section className="surface space-y-4 p-5">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{data.category}</Badge>
-              <DirectionBadge direction={data.direction} />
-              <StatusBadge status={data.status} />
+              <DirectionBadge direction={data.direction ?? "neutral"} />
+              <StatusBadge status={data.status ?? "pending"} />
               <AiBadge />
             </div>
             <p className="text-xs text-muted-foreground">
-              Prepared {dateTime(data.generatedAt)}
+              Prepared {dateTime(data.generatedAt ?? (data as any).created_at)}
             </p>
-            <ConfidenceMeter value={data.confidence} />
+            <ConfidenceMeter value={data.confidence ?? 0} />
           </section>
 
-          <CfoBasisPanel basis={data.narrativeBasis} />
+          <CfoBasisPanel basis={data.narrativeBasis ?? ['Analysis based on latest quarterly metrics.']} />
         </div>
 
         <aside className="surface space-y-3 self-start p-5">

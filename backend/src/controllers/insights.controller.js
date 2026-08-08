@@ -117,7 +117,7 @@ export async function rejectInsight(req, res, next) {
              approved_at      = NULL
        WHERE insight_id = $3
        RETURNING insight_id, approval_status, rejected_at, reviewed_by, rejection_reason`,
-      [req.user.user_id, rejection_reason.trim(), id],
+      [req.user.user_id, String(reason).trim(), id],
     );
 
     return res.json({ success: true, insight: rows[0] });
