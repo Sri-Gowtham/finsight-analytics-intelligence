@@ -1,10 +1,18 @@
 # FinSight — Financial Intelligence Platform
 
+![Status](https://img.shields.io/badge/Status-Live-brightgreen)
+![Stack](https://img.shields.io/badge/Stack-Node.js%20%7C%20React%20%7C%20PostgreSQL-blue)
+![AI](https://img.shields.io/badge/AI-Groq%20%7C%20Gemini-orange)
+![Hosting](https://img.shields.io/badge/Hosting-Render%20%7C%20Vercel-purple)
+![License](https://img.shields.io/badge/License-Private-red)
+
+---
+
 > Turn scattered banking data into trustworthy, explainable insights — auditable, traceable, and never invented.
 
 ---
 
-## What is FinSight?
+## 🏦 What is FinSight?
 
 FinSight is an AI-powered financial intelligence platform built for financial consultancy and advisory firms managing banking-sector portfolios.
 
@@ -14,7 +22,7 @@ It collects and analyses key metrics across NSE-listed Indian banks — NIM, NPA
 
 ---
 
-## Core Principles
+## 🎯 Core Principles
 
 | Principle | What it means |
 |---|---|
@@ -25,7 +33,7 @@ It collects and analyses key metrics across NSE-listed Indian banks — NIM, NPA
 
 ---
 
-## Who Uses FinSight
+## 👥 Who Uses FinSight
 
 | Role | What they do |
 |---|---|
@@ -37,7 +45,7 @@ It collects and analyses key metrics across NSE-listed Indian banks — NIM, NPA
 
 ---
 
-## Features
+## ✨ Features
 
 ### Research
 - **Explore Banks** — Individual bank metrics, AI insights, live NSE/BSE prices, income statement and cash flow data
@@ -65,7 +73,7 @@ It collects and analyses key metrics across NSE-listed Indian banks — NIM, NPA
 
 ---
 
-## Banks Covered
+## 🏛️ Banks Covered
 
 | Bank | Ticker | Segment |
 |---|---|---|
@@ -77,7 +85,7 @@ It collects and analyses key metrics across NSE-listed Indian banks — NIM, NPA
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -94,7 +102,7 @@ It collects and analyses key metrics across NSE-listed Indian banks — NIM, NPA
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 finsight/
@@ -120,7 +128,7 @@ finsight/
 
 ---
 
-## Local Development
+## 🚀 Local Development
 
 ### Prerequisites
 - Node.js v18+
@@ -171,7 +179,7 @@ node index.js          # runs once and exits; add to cron for daily runs
 
 ---
 
-## Deployment
+## ☁️ Deployment
 
 | Service | Platform | Root Directory |
 |---|---|---|
@@ -184,7 +192,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step instructions.
 
 ---
 
-## Compliance Notice
+## ⚖️ Compliance Notice
 
 FinSight is a **financial intelligence platform**, not a financial advisor or robo-advisor. It does not:
 - Provide buy, sell, or hold recommendations
@@ -195,7 +203,7 @@ All insights are for internal analytical use by the subscribing firm. The firm r
 
 ---
 
-## Demo Accounts
+## 🔐 Demo Accounts
 
 | Role | Email | Password |
 |---|---|---|
