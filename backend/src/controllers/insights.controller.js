@@ -37,7 +37,14 @@ export async function listInsightsByStatus(req, res, next) {
       [status],
     );
 
-    return res.json({ status, insights: rows });
+    const role = req.user.role;
+    const shaped = rows.map(row => {
+      if (role === 'CFO' || role === 'Admin') return row;
+      // Analyst gets full data but without reviewed_by details
+      const { reviewed_by, ...rest } = row;
+      return rest;
+    });
+    return res.json({ insights: shaped });
   } catch (err) {
     next(err);
   }

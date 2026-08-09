@@ -12,8 +12,8 @@ const router = Router();
 // All insight routes require authentication
 router.use(requireAuth);
 
-// GET /api/insights/:id  — CFO/Admin: get single insight
-router.get('/:id', requireAuth, requireRole('CFO', 'Admin'), async (req, res, next) => {
+// GET /api/insights/:id  — CFO/Admin/Analyst: get single insight
+router.get('/:id', requireAuth, requireRole('CFO', 'Analyst', 'Admin'), async (req, res, next) => {
   try {
     const { id } = req.params;
     const result = await pool.query(
@@ -32,8 +32,8 @@ router.get('/:id', requireAuth, requireRole('CFO', 'Admin'), async (req, res, ne
   }
 });
 
-// GET /api/insights?status=pending  — CFO-only: list by approval status
-router.get('/', requireRole('CFO'), listInsightsByStatus);
+// GET /api/insights?status=pending  — CFO/Analyst/Admin: list by approval status
+router.get('/', requireRole('CFO', 'Analyst', 'Admin'), listInsightsByStatus);
 
 // PATCH /api/insights/:id/approve  — CFO-only
 router.patch('/:id/approve', requireRole('CFO'), approveInsight);
