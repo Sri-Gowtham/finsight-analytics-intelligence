@@ -26,9 +26,9 @@ export async function createScenario(req, res, next) {
       return res.status(404).json({ error: 'Company not found' });
     }
 
-    // Fetch current value from bank_financials_raw
+    // Fetch current value from bank_financials_raw quarterly_results
     const metricRes = await pool.query(
-      `SELECT market_data
+      `SELECT quarterly_results
        FROM bank_financials_raw
        WHERE company_id = $1
        ORDER BY fetch_date DESC
@@ -40,25 +40,35 @@ export async function createScenario(req, res, next) {
       return res.status(400).json({ error: 'No current metric data found for company' });
     }
 
-    // Extract metric value from market_data JSON
-    const marketData = typeof metricRes.rows[0].market_data === 'string'
-      ? JSON.parse(metricRes.rows[0].market_data)
-      : metricRes.rows[0].market_data;
-
+    // Extract metrics from quarterly_results (most recent quarter)
     let current_value = 0;
-    if (metric_name === 'NIM') {
-      current_value = marketData.nim ?? 0;
-    } else if (metric_name === 'NPA_percent') {
-      current_value = marketData.gnpa ?? 0;
-    } else if (metric_name === 'CAR') {
-      current_value = marketData.car ?? 0;
-    } else if (metric_name === 'loan_growth') {
-      current_value = marketData.loan_growth ?? 0;
+    const qtrData = metricRes.rows[0].quarterly_results;
+
+    if (qtrData) {
+      const results = typeof qtrData === 'string' ? JSON.parse(qtrData) : qtrData;
+
+      if (Array.isArray(results) && results.length > 0) {
+        const latest = results[results.length - 1];
+
+        if (metric_name === 'NIM') {
+          current_value = latest.nim ?? latest.NIM ?? 0;
+        } else if (metric_name === 'NPA_percent') {
+          current_value = latest.gnpa ?? latest.npa ?? latest.GNPA ?? 0;
+        } else if (metric_name === 'CAR') {
+          current_value = latest.car ?? latest.CAR ?? 0;
+        } else if (metric_name === 'loan_growth') {
+          current_value = latest.loan_growth ?? latest.loanGrowth ?? 0;
+        }
+      }
     }
 
-    // Fetch sector average from bank_financials_raw
+    if (current_value === 0) {
+      return res.status(400).json({ error: `No ${metric_name} data found for company` });
+    }
+
+    // Fetch sector average from bank_financials_raw quarterly results
     const sectorRes = await pool.query(
-      `SELECT DISTINCT ON (bfr.company_id) bfr.market_data, c.ticker
+      `SELECT DISTINCT ON (bfr.company_id) bfr.quarterly_results, c.ticker
        FROM bank_financials_raw bfr
        JOIN companies c ON c.company_id = bfr.company_id
        WHERE c.sector = 'Banking'
@@ -70,17 +80,22 @@ export async function createScenario(req, res, next) {
       const values = [];
 
       for (const row of sectorRes.rows) {
-        const mktData = typeof row.market_data === 'string'
-          ? JSON.parse(row.market_data)
-          : row.market_data;
+        const qtrData = row.quarterly_results;
+        if (qtrData) {
+          const results = typeof qtrData === 'string' ? JSON.parse(qtrData) : qtrData;
 
-        let val = 0;
-        if (metric_name === 'NIM') val = mktData.nim ?? 0;
-        else if (metric_name === 'NPA_percent') val = mktData.gnpa ?? 0;
-        else if (metric_name === 'CAR') val = mktData.car ?? 0;
-        else if (metric_name === 'loan_growth') val = mktData.loan_growth ?? 0;
+          if (Array.isArray(results) && results.length > 0) {
+            const latest = results[results.length - 1];
 
-        if (val > 0) values.push(val);
+            let val = 0;
+            if (metric_name === 'NIM') val = latest.nim ?? latest.NIM ?? 0;
+            else if (metric_name === 'NPA_percent') val = latest.gnpa ?? latest.npa ?? latest.GNPA ?? 0;
+            else if (metric_name === 'CAR') val = latest.car ?? latest.CAR ?? 0;
+            else if (metric_name === 'loan_growth') val = latest.loan_growth ?? latest.loanGrowth ?? 0;
+
+            if (val > 0) values.push(val);
+          }
+        }
       }
 
       sector_avg = values.length > 0 ? values.reduce((a, b) => a + b) / values.length : 0;
