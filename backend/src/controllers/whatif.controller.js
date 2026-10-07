@@ -26,49 +26,65 @@ export async function createScenario(req, res, next) {
       return res.status(404).json({ error: 'Company not found' });
     }
 
-    // Fetch current value (latest timestamp)
+    // Fetch current value from bank_financials_raw
     const metricRes = await pool.query(
-      `SELECT value 
-       FROM financial_metrics 
-       WHERE company_id = $1 AND metric_name = $2 
-       ORDER BY timestamp DESC 
+      `SELECT market_data
+       FROM bank_financials_raw
+       WHERE company_id = $1
+       ORDER BY fetch_date DESC
        LIMIT 1`,
-      [company_id, metric_name]
+      [company_id]
     );
 
     if (metricRes.rows.length === 0) {
       return res.status(400).json({ error: 'No current metric data found for company' });
     }
-    const current_value = Number(metricRes.rows[0].value);
 
-    // Fetch sector average
-    const sectorAvgRes = await pool.query(
-      `SELECT AVG(value) as sector_avg
-       FROM financial_metrics fm
-       JOIN companies c ON c.company_id = fm.company_id
-       WHERE c.sector = 'Banking' AND fm.metric_name = $1
-       AND fm.timestamp = (
-         SELECT MAX(timestamp) 
-         FROM financial_metrics 
-         WHERE company_id = fm.company_id AND metric_name = fm.metric_name
-       )`,
-      [metric_name]
+    // Extract metric value from market_data JSON
+    const marketData = typeof metricRes.rows[0].market_data === 'string'
+      ? JSON.parse(metricRes.rows[0].market_data)
+      : metricRes.rows[0].market_data;
+
+    let current_value = 0;
+    if (metric_name === 'NIM') {
+      current_value = marketData.nim ?? 0;
+    } else if (metric_name === 'NPA_percent') {
+      current_value = marketData.gnpa ?? 0;
+    } else if (metric_name === 'CAR') {
+      current_value = marketData.car ?? 0;
+    } else if (metric_name === 'loan_growth') {
+      current_value = marketData.loan_growth ?? 0;
+    }
+
+    // Fetch sector average from bank_financials_raw
+    const sectorRes = await pool.query(
+      `SELECT DISTINCT ON (bfr.company_id) bfr.market_data, c.ticker
+       FROM bank_financials_raw bfr
+       JOIN companies c ON c.company_id = bfr.company_id
+       WHERE c.sector = 'Banking'
+       ORDER BY bfr.company_id, bfr.fetch_date DESC`
     );
-    // Actually the prompt just says: "Fetch the sector average for that metric across all banks with sector = 'Banking'". 
-    // Simplified sector average:
-    const simpleAvgRes = await pool.query(
-      `SELECT AVG(fm.value) as sector_avg
-       FROM (
-         SELECT DISTINCT ON (company_id) company_id, value
-         FROM financial_metrics
-         WHERE metric_name = $1
-         ORDER BY company_id, timestamp DESC
-       ) fm
-       JOIN companies c ON c.company_id = fm.company_id
-       WHERE c.sector = 'Banking'`,
-       [metric_name]
-    );
-    const sector_avg = simpleAvgRes.rows[0]?.sector_avg || 0;
+
+    let sector_avg = 0;
+    if (sectorRes.rows.length > 0) {
+      const values = [];
+
+      for (const row of sectorRes.rows) {
+        const mktData = typeof row.market_data === 'string'
+          ? JSON.parse(row.market_data)
+          : row.market_data;
+
+        let val = 0;
+        if (metric_name === 'NIM') val = mktData.nim ?? 0;
+        else if (metric_name === 'NPA_percent') val = mktData.gnpa ?? 0;
+        else if (metric_name === 'CAR') val = mktData.car ?? 0;
+        else if (metric_name === 'loan_growth') val = mktData.loan_growth ?? 0;
+
+        if (val > 0) values.push(val);
+      }
+
+      sector_avg = values.length > 0 ? values.reduce((a, b) => a + b) / values.length : 0;
+    }
 
     const delta = hypothetical_value - current_value;
     const percent_change = (delta / current_value) * 100;

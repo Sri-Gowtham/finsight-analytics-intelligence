@@ -75,7 +75,7 @@ router.post('/', chatRateLimiter, optionalAuth, async (req, res, next) => {
     ];
 
     const reply = await callGeminiWithRetry(messages, getSystemPrompt(req.user?.role), {
-      model: 'gemini-3.5-flash',
+      model: 'gemini-2.5-flash',
       temperature: 0.3,
     });
 
