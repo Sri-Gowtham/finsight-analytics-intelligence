@@ -17,6 +17,7 @@ import analysisRouter from './routes/analysis.routes.js';
 import reportsRouter from './routes/reports.routes.js';
 import chatRouter from './routes/chat.routes.js';
 import portfoliosRouter from './routes/portfolios.routes.js';
+import refreshRouter from './routes/refresh.routes.js';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
@@ -46,6 +47,7 @@ app.use('/api/analysis',  analysisRouter);
 app.use('/api/reports',   reportsRouter);
 app.use('/api/chat',      chatRouter);
 app.use('/api/portfolios', portfoliosRouter);
+app.use('/api/refresh-data', refreshRouter);
 
 // ── Error handling (must be registered last) ────────
 app.use(notFoundHandler);

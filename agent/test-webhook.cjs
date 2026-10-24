@@ -1,28 +1,20 @@
-const https = require('https');
+// Usage: node test-webhook.cjs [TICKER]
+// Reads AGENT_WEBHOOK_URL from backend/.env
+require('dotenv').config({ path: require('path').join(__dirname, '../backend/.env') });
 
-const data = JSON.stringify({ ticker: "HDFCBANK" });
+const url = process.env.AGENT_WEBHOOK_URL;
+if (!url) {
+  console.error('AGENT_WEBHOOK_URL is not set in backend/.env');
+  process.exit(1);
+}
 
-const options = {
-  hostname: 'api.agents.snsihub.ai',
-  port: 443,
-  path: '/webhook/dd177273-ec59-4344-91c2-df1efbb547ce',
+fetch(url, {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Content-Length': data.length
-  }
-};
-
-const req = https.request(options, res => {
-  console.log(`statusCode: ${res.statusCode}`);
-  res.on('data', d => {
-    process.stdout.write(d);
-  });
-});
-
-req.on('error', error => {
-  console.error(error);
-});
-
-req.write(data);
-req.end();
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ ticker: process.argv[2] || 'HDFCBANK' }),
+})
+  .then(async (res) => {
+    console.log(`statusCode: ${res.status}`);
+    console.log(await res.text());
+  })
+  .catch((err) => console.error(err));

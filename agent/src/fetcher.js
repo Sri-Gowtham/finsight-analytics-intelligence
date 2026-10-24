@@ -48,5 +48,5 @@ export async function fetchCashFlow(ticker) {
 }
 
 export async function fetchQuarterlyStats(ticker) {
-  return fetchWithDelay(`${BASE_URL}/historical_stats?name=${ticker}`, ticker, '/historical_stats');
+  return fetchWithDelay(`${BASE_URL}/historical_stats?stock_name=${ticker}&stats=quarter_results`, ticker, '/historical_stats');
 }

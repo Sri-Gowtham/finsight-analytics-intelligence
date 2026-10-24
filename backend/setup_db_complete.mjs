@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const { Pool } = pg;
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: /@(localhost|127.0.0.1)[:/]/.test(process.env.DATABASE_URL || '') ? false : { rejectUnauthorized: false } });
 
 async function run() {
   const client = await pool.connect();
@@ -35,11 +35,11 @@ async function run() {
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS financial_metrics (
-        id SERIAL PRIMARY KEY,
+        metric_id SERIAL PRIMARY KEY,
         company_id INT REFERENCES companies(company_id) ON DELETE CASCADE,
         metric_name VARCHAR(100) NOT NULL,
         value DECIMAL(20,4) NOT NULL,
-        timestamp VARCHAR(50) NOT NULL
+        timestamp TIMESTAMP DEFAULT NOW()
       );
     `);
 

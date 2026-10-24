@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import app from './src/app.js';
 import { pool } from './src/config/db.js';
-import { startScheduler } from './src/data_collector/scheduler/index.js';
+import { startAgentScheduler } from './src/agent/index.js';
 
 const PORT = process.env.PORT || 3001; // restart
 
@@ -16,5 +16,5 @@ try {
 
 app.listen(PORT, () => {
   console.log(`✓ FinSight API listening on port ${PORT}`);
-  // startScheduler(); // disabled — agent/index.js handles data collection
+  startAgentScheduler();
 });

@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 dotenv.config();
 const { Pool } = pg;
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: /@(localhost|127.0.0.1)[:/]/.test(process.env.DATABASE_URL || '') ? false : { rejectUnauthorized: false } });
 const hash = await bcrypt.hash('demo1234', 4);
 for (const email of ['admin@finsight.demo','analyst@finsight.demo','cfo@finsight.demo']) {
   const r = await pool.query('UPDATE users SET password_hash = $1 WHERE email = $2 RETURNING email, role', [hash, email]);

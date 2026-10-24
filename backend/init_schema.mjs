@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, ssl: /@(localhost|127.0.0.1)[:/]/.test(process.env.DATABASE_URL || '') ? false : { rejectUnauthorized: false } });
 
 async function init() {
   console.log('--- Initializing FinSight Database Schema ---');
