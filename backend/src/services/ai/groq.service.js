@@ -23,7 +23,7 @@ export function getGroqClient() {
  * Calls the Groq Chat Completions API with built-in retries, exponential backoff, and timeout handling.
  * @param {Array<Object>} messages - The array of message objects for the chat model.
  * @param {Object} options - Configuration options for the API call.
- * @param {string} [options.model='llama-3.3-70b-versatile'] - The Groq model to use.
+ * @param {string} [options.model='openai/gpt-oss-120b'] - The Groq model to use.
  * @param {Object} [options.responseFormat={ type: 'json_object' }] - The response format configuration.
  * @param {number} [options.temperature=0] - The temperature setting.
  * @param {number} [options.maxRetries=3] - Maximum number of retry attempts.
@@ -34,7 +34,7 @@ export function getGroqClient() {
  */
 export async function callGroqWithRetry(messages, options = {}) {
   const {
-    model = 'llama-3.3-70b-versatile',
+    model = 'openai/gpt-oss-120b',
     responseFormat = { type: 'json_object' },
     temperature = 0,
     maxRetries = 3,

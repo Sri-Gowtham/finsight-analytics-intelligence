@@ -26,80 +26,49 @@ export async function createScenario(req, res, next) {
       return res.status(404).json({ error: 'Company not found' });
     }
 
-    // Fetch current value from bank_financials_raw quarterly_results
+    // Fetch current value (latest timestamp)
     const metricRes = await pool.query(
-      `SELECT quarterly_results
-       FROM bank_financials_raw
-       WHERE company_id = $1
-       ORDER BY fetch_date DESC
+      `SELECT value 
+       FROM financial_metrics 
+       WHERE company_id = $1 AND metric_name = $2 
+       ORDER BY timestamp DESC 
        LIMIT 1`,
-      [company_id]
+      [company_id, metric_name]
     );
 
     if (metricRes.rows.length === 0) {
       return res.status(400).json({ error: 'No current metric data found for company' });
     }
+    const current_value = Number(metricRes.rows[0].value);
 
-    // Extract metrics from quarterly_results (most recent quarter)
-    let current_value = 0;
-    const qtrData = metricRes.rows[0].quarterly_results;
-
-    if (qtrData) {
-      const results = typeof qtrData === 'string' ? JSON.parse(qtrData) : qtrData;
-
-      if (Array.isArray(results) && results.length > 0) {
-        const latest = results[results.length - 1];
-
-        if (metric_name === 'NIM') {
-          current_value = latest.nim ?? latest.NIM ?? 0;
-        } else if (metric_name === 'NPA_percent') {
-          current_value = latest.gnpa ?? latest.npa ?? latest.GNPA ?? 0;
-        } else if (metric_name === 'CAR') {
-          current_value = latest.car ?? latest.CAR ?? 0;
-        } else if (metric_name === 'loan_growth') {
-          current_value = latest.loan_growth ?? latest.loanGrowth ?? 0;
-        }
-      }
-    }
-
-    if (current_value === 0) {
-      return res.status(400).json({ error: `No ${metric_name} data found for company` });
-    }
-
-    // Fetch sector average from bank_financials_raw quarterly results
-    const sectorRes = await pool.query(
-      `SELECT DISTINCT ON (bfr.company_id) bfr.quarterly_results, c.ticker
-       FROM bank_financials_raw bfr
-       JOIN companies c ON c.company_id = bfr.company_id
-       WHERE c.sector = 'Banking'
-       ORDER BY bfr.company_id, bfr.fetch_date DESC`
+    // Fetch sector average
+    const sectorAvgRes = await pool.query(
+      `SELECT AVG(value) as sector_avg
+       FROM financial_metrics fm
+       JOIN companies c ON c.company_id = fm.company_id
+       WHERE c.sector = 'Banking' AND fm.metric_name = $1
+       AND fm.timestamp = (
+         SELECT MAX(timestamp) 
+         FROM financial_metrics 
+         WHERE company_id = fm.company_id AND metric_name = fm.metric_name
+       )`,
+      [metric_name]
     );
-
-    let sector_avg = 0;
-    if (sectorRes.rows.length > 0) {
-      const values = [];
-
-      for (const row of sectorRes.rows) {
-        const qtrData = row.quarterly_results;
-        if (qtrData) {
-          const results = typeof qtrData === 'string' ? JSON.parse(qtrData) : qtrData;
-
-          if (Array.isArray(results) && results.length > 0) {
-            const latest = results[results.length - 1];
-
-            let val = 0;
-            if (metric_name === 'NIM') val = latest.nim ?? latest.NIM ?? 0;
-            else if (metric_name === 'NPA_percent') val = latest.gnpa ?? latest.npa ?? latest.GNPA ?? 0;
-            else if (metric_name === 'CAR') val = latest.car ?? latest.CAR ?? 0;
-            else if (metric_name === 'loan_growth') val = latest.loan_growth ?? latest.loanGrowth ?? 0;
-
-            if (val > 0) values.push(val);
-          }
-        }
-      }
-
-      sector_avg = values.length > 0 ? values.reduce((a, b) => a + b) / values.length : 0;
-    }
+    // Actually the prompt just says: "Fetch the sector average for that metric across all banks with sector = 'Banking'". 
+    // Simplified sector average:
+    const simpleAvgRes = await pool.query(
+      `SELECT AVG(fm.value) as sector_avg
+       FROM (
+         SELECT DISTINCT ON (company_id) company_id, value
+         FROM financial_metrics
+         WHERE metric_name = $1
+         ORDER BY company_id, timestamp DESC
+       ) fm
+       JOIN companies c ON c.company_id = fm.company_id
+       WHERE c.sector = 'Banking'`,
+       [metric_name]
+    );
+    const sector_avg = simpleAvgRes.rows[0]?.sector_avg || 0;
 
     const delta = hypothetical_value - current_value;
     const percent_change = (delta / current_value) * 100;
@@ -109,7 +78,7 @@ export async function createScenario(req, res, next) {
     try {
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
       const completion = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-120b',
         messages: [
           {
             role: 'system',

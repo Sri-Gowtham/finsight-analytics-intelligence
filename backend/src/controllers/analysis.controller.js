@@ -296,7 +296,7 @@ Please output the final result in JSON mode matching the schema structure.`;
     // 7. Send to Groq and measure execution time
     const startTime = Date.now();
     const groqResponse = await callGroqWithRetry(messages, {
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       responseFormat: { type: 'json_object' }
     });
     const duration = Date.now() - startTime;
@@ -307,7 +307,7 @@ Please output the final result in JSON mode matching the schema structure.`;
     }
 
     // Log token usage (only on server side, not exposed to frontend)
-    const modelUsed = groqResponse.model || 'llama-3.3-70b-versatile';
+    const modelUsed = groqResponse.model || 'openai/gpt-oss-120b';
     const promptTokens = groqResponse.usage?.prompt_tokens || 0;
     const completionTokens = groqResponse.usage?.completion_tokens || 0;
     const totalTokens = groqResponse.usage?.total_tokens || 0;
