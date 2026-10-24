@@ -49,6 +49,7 @@ async function run() {
         company_id INT REFERENCES companies(company_id) ON DELETE CASCADE,
         generated_text TEXT NOT NULL,
         insight_type VARCHAR(100),
+        source_metric_ids VARCHAR(255),
         approval_status VARCHAR(20) DEFAULT 'pending',
         approved_at TIMESTAMP,
         rejected_at TIMESTAMP,
@@ -65,7 +66,8 @@ async function run() {
         id SERIAL PRIMARY KEY,
         client_name VARCHAR(255) NOT NULL,
         company_id INT REFERENCES companies(company_id) ON DELETE CASCADE,
-        uploaded_by INT REFERENCES users(user_id)
+        uploaded_by INT REFERENCES users(user_id),
+        client_details JSONB
       );
     `);
 
