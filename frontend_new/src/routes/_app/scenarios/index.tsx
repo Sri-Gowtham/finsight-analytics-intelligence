@@ -71,11 +71,14 @@ export const Route = createFileRoute("/_app/scenarios/")({
   ),
 });
 
+// Live metrics only. Keep in sync with ALLOWED_METRICS in backend whatif.controller.js
 const ALLOWED_METRICS = [
-  { value: "NIM", label: "Net Interest Margin" },
-  { value: "NPA_percent", label: "NPA %" },
-  { value: "CAR", label: "Capital Adequacy" },
-  { value: "loan_growth", label: "Loan Growth" },
+  { value: "ProfitMargin", label: "Net Profit Margin (%)" },
+  { value: "ROE", label: "Return on Equity (%)" },
+  { value: "ROA", label: "Return on Assets (%)" },
+  { value: "RevenueGrowth", label: "Revenue Growth, QoQ (%)" },
+  { value: "EPS", label: "Earnings per Share (₹)" },
+  { value: "NetProfit", label: "Net Profit (₹ Cr)" },
 ];
 
 interface ChatMessage {
@@ -84,14 +87,20 @@ interface ChatMessage {
   timestamp: number;
 }
 
-function getMetricValue(bank: Bank, metricName: string): number {
+function getPointValue(p: Bank["latest"], metricName: string): number {
   switch (metricName) {
-    case "NIM": return bank.latest.nim;
-    case "NPA_percent": return bank.latest.gnpa;
-    case "CAR": return bank.latest.car;
-    case "loan_growth": return 0;
-    default: return 0;
+    case "ProfitMargin": return p.profitMargin;
+    case "ROE": return p.roe;
+    case "ROA": return p.roa;
+    case "RevenueGrowth": return p.revenueGrowth;
+    case "EPS": return p.eps;
+    case "NetProfit": return p.pat;
+    default: return NaN;
   }
+}
+
+function getMetricValue(bank: Bank, metricName: string): number {
+  return getPointValue(bank.latest, metricName);
 }
 
 function ScenarioPage() {
@@ -102,7 +111,7 @@ function ScenarioPage() {
   const scenarioRuns = useScenarioRuns(user?.id ?? "");
 
   // Input state
-  const [metricName, setMetricName] = useState("NIM");
+  const [metricName, setMetricName] = useState("ProfitMargin");
   const [hypotheticalValue, setHypotheticalValue] = useState<number>(0);
   const [selectedQuarter, setSelectedQuarter] = useState<string>("");
 
@@ -129,7 +138,7 @@ function ScenarioPage() {
   useEffect(() => {
     if (bank) {
       const currentVal = getMetricValue(bank, metricName);
-      setHypotheticalValue(currentVal);
+      setHypotheticalValue(Number.isFinite(currentVal) ? currentVal : 0);
       if (bank.history.length > 0) {
         const lastQuarter = bank.history[bank.history.length - 1];
         if (lastQuarter) {
@@ -159,7 +168,7 @@ function ScenarioPage() {
   const currentValue = bank ? getMetricValue(bank, metricName) : 0;
 
   const handleRunScenario = useCallback(async () => {
-    if (!bank || isRunning) return;
+    if (!bank || isRunning || !Number.isFinite(currentValue)) return;
     setIsRunning(true);
 
     // Find company_id from the banks data
@@ -276,7 +285,7 @@ function ScenarioPage() {
   const impactDelta = bank.history.map((p) => {
     const baseVal = getMetricValue(bank, metricName);
     const delta = hypotheticalValue - baseVal;
-    const original = metricName === "NIM" ? p.nim : metricName === "NPA_percent" ? p.gnpa : metricName === "CAR" ? p.car : 0;
+    const original = getPointValue(p, metricName);
     return {
       quarter: p.quarter,
       baseline: original,
@@ -409,7 +418,7 @@ function ScenarioPage() {
             <div className="space-y-1.5">
               <Label>Current Value</Label>
               <div className="flex h-9 items-center rounded-md border border-border bg-muted px-3 text-sm font-semibold tabular-nums">
-                {currentValue.toFixed(2)}
+                {Number.isFinite(currentValue) ? currentValue.toFixed(2) : "N/A"}
               </div>
             </div>
 
@@ -467,7 +476,7 @@ function ScenarioPage() {
             <Button
               className="w-full"
               onClick={() => void handleRunScenario()}
-              disabled={isRunning}
+              disabled={isRunning || !Number.isFinite(currentValue)}
             >
               {isRunning ? (
                 <>

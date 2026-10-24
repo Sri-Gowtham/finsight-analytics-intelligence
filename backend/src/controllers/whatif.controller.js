@@ -1,7 +1,7 @@
 import { pool } from '../config/db.js';
 import Groq from 'groq-sdk';
 
-const ALLOWED_METRICS = ['NIM', 'NPA_percent', 'CAR', 'loan_growth'];
+const ALLOWED_METRICS = ['ProfitMargin', 'ROE', 'ROA', 'RevenueGrowth', 'EPS', 'NetProfit'];
 
 /**
  * POST /api/whatif
