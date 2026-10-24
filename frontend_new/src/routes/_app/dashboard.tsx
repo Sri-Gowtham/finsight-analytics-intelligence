@@ -173,7 +173,7 @@ function AnalystDashboard({ analystId }: { analystId: string }) {
                           <span className="min-w-0">
                             <span className="block truncate text-sm font-medium">{bank.name}</span>
                             <span className="block text-xs text-muted-foreground">
-                              GNPA {pct(bank.latest.gnpa)} · NIM {pct(bank.latest.nim)}
+                              ROA {pct(bank.latest.roa)} · Margin {pct(bank.latest.profitMargin)}
                             </span>
                           </span>
                           <span

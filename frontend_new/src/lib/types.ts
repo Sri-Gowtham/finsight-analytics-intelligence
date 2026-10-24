@@ -32,6 +32,12 @@ export interface MetricPoint {
   profitMargin: number;
   /** Derived: Quarter-over-quarter revenue growth % */
   revenueGrowth: number;
+  /** Live: earnings per share (₹) */
+  eps: number;
+  /** Live: price/earnings ratio */
+  pe: number;
+  /** Live: market capitalisation (₹ Cr) */
+  marketCapCr: number;
 }
 
 export interface Bank {

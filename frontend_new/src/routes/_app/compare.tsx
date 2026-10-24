@@ -25,10 +25,10 @@ function exportComparisonCSV(banks: import("@/lib/types").Bank[]) {
   const headers = [
     "Bank",
     "Ticker",
-    "NIM (%)",
-    "Gross NPA (%)",
-    "CAR (%)",
-    "Loan Growth (%)",
+    "Net profit (₹ Cr)",
+    "Profit margin (%)",
+    "Revenue growth (%)",
+    "ROE (%)",
     "ROA (%)",
     "Price (₹)",
     "52W High (₹)",
@@ -38,14 +38,14 @@ function exportComparisonCSV(banks: import("@/lib/types").Bank[]) {
   const rows = banks.map((b) => [
     b.name,
     b.symbol,
-    b.latest.nim ?? "",
-    b.latest.gnpa ?? "",
-    b.latest.car ?? "",
-    b.latest.gnpa ?? "",
-    b.latest.roa ?? "",
+    Number.isFinite(b.latest.pat) ? b.latest.pat : "N/A",
+    Number.isFinite(b.latest.profitMargin) ? b.latest.profitMargin : "N/A",
+    Number.isFinite(b.latest.revenueGrowth) ? b.latest.revenueGrowth : "N/A",
+    Number.isFinite(b.latest.roe) ? b.latest.roe : "N/A",
+    Number.isFinite(b.latest.roa) ? b.latest.roa : "N/A",
     b.price ?? "",
-    b.latest.nim ?? "",
-    b.latest.gnpa ?? "",
+    "",
+    "",
   ]);
 
   const csv = [headers, ...rows]
@@ -102,7 +102,7 @@ export const Route = createFileRoute("/_app/compare")({
 });
 
 const MAX = 4;
-const METRICS = ["NIM", "ROE", "ROA", "Revenue Growth", "Profit Margin"] as const;
+const METRICS = ["EPS", "ROE", "ROA", "Revenue Growth", "Profit Margin"] as const;
 
 function ComparePage() {
   const { symbols } = Route.useSearch() as { symbols: string };
@@ -143,7 +143,7 @@ function ComparePage() {
     const row: Record<string, string | number> = { quarter: q };
     chosen.forEach((bank) => {
       const pt = bank.history.find(h => h.quarter === q);
-      row[bank.symbol] = pt?.nim ?? 0;
+      row[bank.symbol] = Number.isFinite(pt?.eps) ? (pt?.eps as number) : 0;
     });
     return row;
   });
@@ -175,16 +175,15 @@ function ComparePage() {
   });
 
   // Radar data: metrics as axes, bank values as series
-  const radarMetrics = ["NIM", "ROE", "ROA", "Profit Margin", "CAR"];
+  const radarMetrics = ["ROE", "ROA", "Profit Margin", "Revenue Growth"];
   const radarData = radarMetrics.map((metric) => {
     const row: Record<string, string | number> = { metric };
     chosen.forEach((b) => {
       switch (metric) {
-        case "NIM": row[b.symbol] = b.latest.nim; break;
         case "ROE": row[b.symbol] = b.latest.roe; break;
         case "ROA": row[b.symbol] = b.latest.roa; break;
         case "Profit Margin": row[b.symbol] = b.latest.profitMargin; break;
-        case "CAR": row[b.symbol] = b.latest.car; break;
+        case "Revenue Growth": row[b.symbol] = b.latest.revenueGrowth; break;
       }
     });
     return row;
@@ -198,7 +197,7 @@ function ComparePage() {
     ? chosen.reduce((a, b) => (a.latest.revenueGrowth > b.latest.revenueGrowth ? a : b))
     : null;
   const lowestRisk = chosen.length > 0
-    ? chosen.reduce((a, b) => (a.latest.gnpa < b.latest.gnpa ? a : b))
+    ? chosen.reduce((a, b) => (a.latest.roa > b.latest.roa || Number.isNaN(b.latest.roa) ? a : b))
     : null;
   const highestProfitMargin = chosen.length > 0
     ? chosen.reduce((a, b) => (a.latest.profitMargin > b.latest.profitMargin ? a : b))
@@ -295,8 +294,8 @@ function ComparePage() {
           {/* ── 5 Chart Panels ── */}
           <div className="grid gap-4 lg:grid-cols-2">
             {/* a) NIM Multi-Line */}
-            {(metricFilter === "all" || metricFilter === "NIM") && (
-              <ChartPanel title="Net Interest Margin" subtitle="Quarterly NIM trend, percent">
+            {(metricFilter === "all" || metricFilter === "EPS") && (
+              <ChartPanel title="Earnings per Share" subtitle="Quarterly EPS trend, ₹ per share">
                 {nimTrend.length > 0 ? (
                   <TrendLineChart
                     data={nimTrend}
@@ -362,7 +361,7 @@ function ComparePage() {
 
           {/* e) Profit Margin Radar — full width */}
           {(metricFilter === "all" || metricFilter === "Profit Margin") && (
-            <ChartPanel title="Multi-Metric Radar" subtitle="NIM, ROE, ROA, Profit Margin, CAR">
+            <ChartPanel title="Multi-Metric Radar" subtitle="ROE, ROA, Profit Margin, Revenue Growth">
               {radarData.length > 0 ? (
                 <RadarComparisonChart
                   data={radarData}
@@ -391,8 +390,8 @@ function ComparePage() {
               icon={<BarChart3 className="size-4" />}
             />
             <StatCard
-              label="Lowest Risk"
-              value={lowestRisk ? `${pct(lowestRisk.latest.gnpa)} GNPA` : "—"}
+              label="Highest ROA"
+              value={lowestRisk ? pct(lowestRisk.latest.roa) : "—"}
               hint={lowestRisk?.symbol}
               icon={<Shield className="size-4" />}
             />

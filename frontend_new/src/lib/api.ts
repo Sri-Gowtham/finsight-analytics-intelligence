@@ -150,23 +150,32 @@ type RawCompany = { company_id: number; name: string; ticker: string; sector: st
 type RawMetric = { metric_id: number; metric_name: string; value: string; timestamp: string };
 
 function buildMetricPoint(quarter: string, metrics: RawMetric[]): import("./types").MetricPoint {
+  // Only live values from the data agent. Anything the source does not provide
+  // (NIM, Gross NPA, CAR, CASA, advances, deposits) is NaN and renders as N/A.
   const val = (name: string) => {
     const m = metrics.find((m) => m.metric_name === name);
-    return m ? Number(m.value) : 0;
+    return m ? Number(m.value) : NaN;
   };
-  const nim = val("NIM");
-  const gnpa = val("NPA_percent");
-  const car = val("CAR");
-  // Derive realistic proxy values from available metrics
-  const roa = nim > 0 ? Math.round((nim * 0.38 - gnpa * 0.12) * 100) / 100 : 0;
-  const roe = roa > 0 ? Math.round(roa * (100 / Math.max(car, 10)) * 100) / 100 : 0;
-  const advances = nim > 0 ? Math.round(nim * 12000 + car * 800) : 0;
-  const deposits = Math.round(advances * 1.15);
-  const pat = roa > 0 ? Math.round(roa * (advances + deposits) * 0.005) : 0;
-  const casa = nim > 0 ? Math.round((nim * 8 + 20) * 100) / 100 : 0;
-  const revenue = nim > 0 ? Math.round(nim * advances * 0.01 * 100) / 100 : 0;
-  const profitMargin = nim > 0 ? Math.round((nim - gnpa * 0.6) * 100) / 100 : 0;
-  return { quarter, nim, gnpa, nnpa: Math.round(gnpa * 0.45 * 100) / 100, car, casa, roa, pat, advances, deposits, price: 0, roe, revenue, profitMargin, revenueGrowth: 0 };
+  return {
+    quarter,
+    nim: NaN,
+    gnpa: NaN,
+    nnpa: NaN,
+    car: NaN,
+    casa: NaN,
+    advances: NaN,
+    deposits: NaN,
+    roa: val("ROA"),
+    roe: val("ROE"),
+    pat: val("NetProfit"),
+    revenue: val("Revenue"),
+    profitMargin: val("ProfitMargin"),
+    revenueGrowth: val("RevenueGrowth"),
+    eps: val("EPS"),
+    pe: val("PE"),
+    price: val("Price"),
+    marketCapCr: val("MarketCap"),
+  };
 }
 
 async function fetchBankHistory(companyId: number): Promise<RawMetric[]> {
@@ -233,7 +242,7 @@ export async function listBanks(): Promise<Bank[]> {
         }
       }
       const latest = historyPoints.at(-1) ?? buildMetricPoint("—", []);
-      return { symbol: c.ticker, name: c.name, segment: ((c.segment || c.sector || "Private") as Bank["segment"]), marketCapCr: 0, price: 0, changePct: 0, latest, history: historyPoints } satisfies Bank;
+      return { symbol: c.ticker, name: c.name, segment: ((c.segment || c.sector || "Private") as Bank["segment"]), marketCapCr: Number.isFinite(latest.marketCapCr) ? latest.marketCapCr : 0, price: Number.isFinite(latest.price) ? latest.price : 0, changePct: 0, latest, history: historyPoints } satisfies Bank;
     }),
   );
   return banks;

@@ -25,7 +25,7 @@ interface Seed {
   marketCapCr: number;
   price: number;
   changePct: number;
-  base: Omit<MetricPoint, "quarter" | "roe" | "revenue" | "profitMargin" | "revenueGrowth"> & Partial<Pick<MetricPoint, "roe" | "revenue" | "profitMargin" | "revenueGrowth">>;
+  base: Omit<MetricPoint, "quarter" | "roe" | "revenue" | "profitMargin" | "revenueGrowth" | "eps" | "pe" | "marketCapCr"> & Partial<Pick<MetricPoint, "roe" | "revenue" | "profitMargin" | "revenueGrowth" | "eps" | "pe" | "marketCapCr">>;
   drift: Partial<Omit<MetricPoint, "quarter">>;
 }
 
@@ -289,7 +289,7 @@ const SEEDS: Seed[] = [
 
 function buildHistory(seed: Seed): MetricPoint[] {
   return QUARTERS.map((quarter, i) => {
-    const base = { roe: 0, revenue: 0, profitMargin: 0, revenueGrowth: 0, ...seed.base };
+    const base = { roe: 0, revenue: 0, profitMargin: 0, revenueGrowth: 0, eps: 0, pe: 0, marketCapCr: 0, ...seed.base };
     const point: MetricPoint = { quarter, ...base };
     (Object.keys(seed.drift) as (keyof typeof seed.drift)[]).forEach((key) => {
       const delta = seed.drift[key] ?? 0;

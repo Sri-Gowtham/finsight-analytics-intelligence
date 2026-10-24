@@ -42,14 +42,14 @@ export const Route = createFileRoute("/_app/explore")({
   ),
 });
 
-type SortKey = "marketCapCr" | "nim" | "gnpa" | "roa" | "car";
+type SortKey = "marketCapCr" | "roa" | "roe" | "profitMargin" | "revenueGrowth";
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "marketCapCr", label: "Market cap" },
-  { key: "nim", label: "Net interest margin" },
-  { key: "gnpa", label: "Gross NPA (low to high)" },
   { key: "roa", label: "Return on assets" },
-  { key: "car", label: "Capital adequacy" },
+  { key: "roe", label: "Return on equity" },
+  { key: "profitMargin", label: "Net profit margin" },
+  { key: "revenueGrowth", label: "Revenue growth (QoQ)" },
 ];
 
 function ExplorePage() {
@@ -69,9 +69,8 @@ function ExplorePage() {
     return [...list].sort((a, b) =>
       sort === "marketCapCr"
         ? b.marketCapCr - a.marketCapCr
-        : sort === "gnpa"
-          ? a.latest.gnpa - b.latest.gnpa
-          : b.latest[sort] - a.latest[sort],
+        : (Number.isFinite(b.latest[sort]) ? b.latest[sort] : -Infinity) -
+          (Number.isFinite(a.latest[sort]) ? a.latest[sort] : -Infinity),
     );
   }, [data, query, segment, sort]);
 
@@ -179,10 +178,10 @@ function ExplorePage() {
                 )}
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
                   {[
-                    ["NIM", pct(bank.latest.nim)],
-                    ["Gross NPA", pct(bank.latest.gnpa)],
-                    ["CAR", pct(bank.latest.car)],
+                    ["Net profit", Number.isFinite(bank.latest.pat) ? crore(bank.latest.pat) : "N/A"],
+                    ["Profit margin", pct(bank.latest.profitMargin)],
                     ["ROA", pct(bank.latest.roa)],
+                    ["ROE", pct(bank.latest.roe)],
                   ].map(([label, value]) => (
                     <div key={label} className="rounded-lg bg-muted/50 px-3 py-2">
                       <dt className="text-muted-foreground">{label}</dt>

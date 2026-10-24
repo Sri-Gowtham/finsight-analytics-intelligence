@@ -113,6 +113,9 @@ function ReplayPage() {
     revenue: 0,
     profitMargin: 0,
     revenueGrowth: 0,
+    eps: 0,
+    pe: 0,
+    marketCapCr: 0,
   };
   const prevPoint = safeIndex > 0 ? bank.history[safeIndex - 1] : null;
   const visible = bank.history.slice(0, safeIndex + 1);
@@ -124,7 +127,7 @@ function ReplayPage() {
     profit: p.pat,
     roe: p.roe,
     roa: p.roa,
-    nim: p.nim,
+    margin: p.profitMargin,
   }));
 
   // Delta calculations
@@ -132,9 +135,9 @@ function ReplayPage() {
     { label: "Revenue", current: point.revenue, prev: prevPoint.revenue },
     { label: "ROE", current: point.roe, prev: prevPoint.roe },
     { label: "ROA", current: point.roa, prev: prevPoint.roa },
-    { label: "NIM", current: point.nim, prev: prevPoint.nim },
-    { label: "GNPA", current: point.gnpa, prev: prevPoint.gnpa },
-    { label: "CAR", current: point.car, prev: prevPoint.car },
+    { label: "Profit", current: point.pat, prev: prevPoint.pat },
+    { label: "EPS", current: point.eps, prev: prevPoint.eps },
+    { label: "Margin", current: point.profitMargin, prev: prevPoint.profitMargin },
   ] : [];
 
   // Get insight text for current quarter
@@ -268,10 +271,10 @@ function ReplayPage() {
           {/* KPI Cards */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
-              label="Net interest margin"
-              value={pct(point.nim)}
-              hint={prevPoint ? `${signedPct(point.nim - prevPoint.nim)} vs prev` : "first period"}
-              trend={prevPoint ? point.nim - prevPoint.nim : undefined}
+              label="Net profit margin"
+              value={pct(point.profitMargin)}
+              hint={prevPoint ? `${signedPct(point.profitMargin - prevPoint.profitMargin)} vs prev` : "first period"}
+              trend={prevPoint && Number.isFinite(point.profitMargin - prevPoint.profitMargin) ? point.profitMargin - prevPoint.profitMargin : undefined}
             />
             <StatCard
               label="Return on equity"
@@ -280,15 +283,14 @@ function ReplayPage() {
               trend={prevPoint ? point.roe - prevPoint.roe : undefined}
             />
             <StatCard
-              label="Gross NPA"
-              value={pct(point.gnpa)}
-              hint={prevPoint ? `${signedPct(point.gnpa - prevPoint.gnpa)} vs prev` : "first period"}
-              trend={prevPoint ? -(point.gnpa - prevPoint.gnpa) : undefined}
+              label="Revenue growth (QoQ)"
+              value={pct(point.revenueGrowth)}
+              hint="vs previous quarter"
             />
             <StatCard
-              label="Capital adequacy"
-              value={pct(point.car)}
-              hint="regulatory min 11.5%"
+              label="Earnings per share"
+              value={Number.isFinite(point.eps) ? `₹${point.eps.toFixed(2)}` : "N/A"}
+              hint={prevPoint ? `${signedPct(point.eps - prevPoint.eps)} vs prev` : "first period"}
             />
           </div>
 
@@ -347,12 +349,12 @@ function ReplayPage() {
             </ChartPanel>
           </div>
 
-          {/* NIM Trend — full width */}
-          <ChartPanel title="NIM Trend" subtitle="Net interest margin to date">
+          {/* Profit margin trend — full width */}
+          <ChartPanel title="Profit margin trend" subtitle="Net profit as % of revenue, to date">
             {trendData.length > 0 ? (
               <TrendAreaChart
                 data={trendData}
-                series={[{ key: "nim", label: "NIM" }]}
+                series={[{ key: "margin", label: "Profit margin" }]}
                 height={260}
                 formatQuarters
               />
@@ -404,7 +406,7 @@ function ReplayPage() {
                   <div className="rounded-lg bg-muted/50 p-4">
                     <p className="text-xs text-muted-foreground">
                       {prevPoint
-                        ? `Quarter-over-quarter changes for ${bank.name}. NIM moved ${signedPct(point.nim - prevPoint.nim)}, while asset quality (GNPA) shifted by ${signedPct(point.gnpa - prevPoint.gnpa)}. Capital adequacy stood at ${pct(point.car)}.`
+                        ? `Quarter-over-quarter changes for ${bank.name}. Profit margin moved ${signedPct(point.profitMargin - prevPoint.profitMargin)} and revenue growth was ${pct(point.revenueGrowth)}.`
                         : "This is the earliest available quarter. No prior period comparison available."}
                     </p>
                   </div>

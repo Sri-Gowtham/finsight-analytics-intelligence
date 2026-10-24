@@ -6,12 +6,15 @@ export const crore = (n: number) => {
   return `₹${inr(Math.round(n))} Cr`;
 };
 
-export const pct = (n: number, digits = 2) => `${n.toFixed(digits)}%`;
+export const pct = (n: number, digits = 2) => (Number.isFinite(n) ? `${n.toFixed(digits)}%` : "N/A");
+
+/** Plain number, or N/A when the source has no value. */
+export const num = (n: number, digits = 2) => (Number.isFinite(n) ? n.toFixed(digits) : "N/A");
 
 export const bps = (n: number) => `${n > 0 ? "+" : ""}${Math.round(n * 100)} bps`;
 
 export const signedPct = (n: number, digits = 2) =>
-  `${n > 0 ? "+" : ""}${n.toFixed(digits)}%`;
+  Number.isFinite(n) ? `${n > 0 ? "+" : ""}${n.toFixed(digits)}%` : "N/A";
 
 export const shortDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-IN", {

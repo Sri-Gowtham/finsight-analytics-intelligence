@@ -3,7 +3,7 @@ import { ArrowLeft, Download, FlaskConical, GitCompareArrows, Rewind } from "luc
 import { RoleGuard } from "@/components/RoleGuard";
 import { ErrorState, LoadingState, PageHeader, EmptyState } from "@/components/states";
 import { useBank, useInsights } from "@/lib/queries";
-import { crore, pct, signedPct } from "@/lib/format";
+import { crore, num, pct, signedPct } from "@/lib/format";
 import { StatCard } from "@/components/data-display";
 import { AiBadge, ConfidenceMeter, DirectionBadge, StatusBadge } from "@/components/data-display";
 import { BankMarketDetail } from "@/components/market-intelligence";
@@ -23,16 +23,15 @@ import {
 import type { MetricPoint } from "@/lib/types";
 
 function downloadCSV(symbol: string, history: MetricPoint[]) {
-  const headers = ["Quarter", "NIM (%)", "Gross NPA (%)", "Net NPA (%)", "CAR (%)", "CASA (%)", "ROA (%)", "PAT (₹ Cr)"];
+  const headers = ["Quarter", "Revenue (₹ Cr)", "PAT (₹ Cr)", "EPS (₹)", "Profit margin (%)", "ROA (%)", "ROE (%)"];
   const rows = [...history].reverse().map(p => [
     p.quarter,
-    p.nim.toFixed(2),
-    p.gnpa.toFixed(2),
-    p.nnpa.toFixed(2),
-    p.car.toFixed(2),
-    p.casa.toFixed(2),
-    p.roa.toFixed(2),
-    p.pat.toFixed(0),
+    num(p.revenue, 0),
+    num(p.pat, 0),
+    num(p.eps),
+    num(p.profitMargin),
+    num(p.roa),
+    num(p.roe),
   ]);
   const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -136,14 +135,14 @@ function BankDetailPage() {
         />
         <StatCard label="Market cap" value={crore(b.marketCapCr)} hint="NSE listed" />
         <StatCard
-          label="Net interest margin"
-          value={pct(last.nim)}
-          hint={`from ${pct(first.nim)} in ${first.quarter}`}
+          label="Return on assets"
+          value={pct(last.roa)}
+          hint="trailing 12 months"
         />
         <StatCard
-          label="Gross NPA"
-          value={pct(last.gnpa)}
-          hint={`${signedPct(last.gnpa - first.gnpa)} vs ${first.quarter}`}
+          label="Return on equity"
+          value={pct(last.roe)}
+          hint="trailing 12 months"
         />
       </div>
 
@@ -156,34 +155,31 @@ function BankDetailPage() {
 
         <TabsContent value="trends" className="space-y-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            <ChartPanel title="Margin and asset quality" subtitle="Percent, by reported quarter">
+            <ChartPanel title="Profitability" subtitle="Percent, by reported quarter">
               <TrendLineChart
                 data={b.history}
                 series={[
-                  { key: "nim", label: "NIM" },
-                  { key: "gnpa", label: "Gross NPA" },
-                  { key: "nnpa", label: "Net NPA" },
+                  { key: "profitMargin", label: "Profit margin" },
+                  { key: "revenueGrowth", label: "Revenue growth" },
                 ]}
               />
             </ChartPanel>
             <ChartPanel title="Profit after tax" subtitle="₹ crore, by reported quarter">
               <TrendAreaChart data={b.history} series={[{ key: "pat", label: "PAT (₹ Cr)" }]} />
             </ChartPanel>
-            <ChartPanel title="Balance sheet growth" subtitle="₹ crore">
+            <ChartPanel title="Revenue" subtitle="₹ crore, by reported quarter">
               <TrendAreaChart
                 data={b.history}
                 series={[
-                  { key: "advances", label: "Advances" },
-                  { key: "deposits", label: "Deposits" },
+                  { key: "revenue", label: "Revenue (₹ Cr)" },
                 ]}
               />
             </ChartPanel>
-            <ChartPanel title="Capital and funding mix" subtitle="Percent">
+            <ChartPanel title="Earnings per share" subtitle="₹ per share">
               <TrendLineChart
                 data={b.history}
                 series={[
-                  { key: "car", label: "CAR" },
-                  { key: "casa", label: "CASA" },
+                  { key: "eps", label: "EPS (₹)" },
                 ]}
               />
             </ChartPanel>
@@ -207,28 +203,24 @@ function BankDetailPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Quarter</TableHead>
-                  <TableHead className="text-right">NIM</TableHead>
-                  <TableHead className="text-right">GNPA</TableHead>
-                  <TableHead className="text-right">NNPA</TableHead>
-                  <TableHead className="text-right">CAR</TableHead>
-                  <TableHead className="text-right">CASA</TableHead>
-                  <TableHead className="text-right">ROA</TableHead>
+                  <TableHead className="text-right">Revenue (₹ Cr)</TableHead>
                   <TableHead className="text-right">PAT (₹ Cr)</TableHead>
+                  <TableHead className="text-right">EPS (₹)</TableHead>
+                  <TableHead className="text-right">Margin</TableHead>
+                  <TableHead className="text-right">ROA</TableHead>
+                  <TableHead className="text-right">ROE</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {[...b.history].reverse().map((point) => (
                   <TableRow key={point.quarter}>
                     <TableCell className="font-medium">{point.quarter}</TableCell>
-                    <TableCell className="text-right tabular-nums">{pct(point.nim)}</TableCell>
-                    <TableCell className="text-right tabular-nums">{pct(point.gnpa)}</TableCell>
-                    <TableCell className="text-right tabular-nums">{pct(point.nnpa)}</TableCell>
-                    <TableCell className="text-right tabular-nums">{pct(point.car)}</TableCell>
-                    <TableCell className="text-right tabular-nums">{pct(point.casa)}</TableCell>
+                    <TableCell className="text-right tabular-nums">{Number.isFinite(point.revenue) ? point.revenue.toLocaleString("en-IN") : "N/A"}</TableCell>
+                    <TableCell className="text-right tabular-nums">{Number.isFinite(point.pat) ? point.pat.toLocaleString("en-IN") : "N/A"}</TableCell>
+                    <TableCell className="text-right tabular-nums">{num(point.eps)}</TableCell>
+                    <TableCell className="text-right tabular-nums">{pct(point.profitMargin)}</TableCell>
                     <TableCell className="text-right tabular-nums">{pct(point.roa)}</TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {point.pat.toLocaleString("en-IN")}
-                    </TableCell>
+                    <TableCell className="text-right tabular-nums">{pct(point.roe)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
