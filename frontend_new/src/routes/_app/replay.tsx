@@ -279,8 +279,8 @@ function ReplayPage() {
             <StatCard
               label="Return on equity"
               value={pct(point.roe)}
-              hint={prevPoint ? `${signedPct(point.roe - prevPoint.roe)} vs prev` : "first period"}
-              trend={prevPoint ? point.roe - prevPoint.roe : undefined}
+              hint={prevPoint && Number.isFinite(point.roe - prevPoint.roe) ? `${signedPct(point.roe - prevPoint.roe)} vs prev` : "trailing 12 months"}
+              trend={prevPoint && Number.isFinite(point.roe - prevPoint.roe) ? point.roe - prevPoint.roe : undefined}
             />
             <StatCard
               label="Revenue growth (QoQ)"
@@ -296,7 +296,7 @@ function ReplayPage() {
 
           {/* 5 Trend Charts */}
           <div className="grid gap-4 lg:grid-cols-2">
-            <ChartPanel title="Revenue Trend" subtitle="Derived revenue index">
+            <ChartPanel title="Revenue Trend" subtitle="Quarterly revenue, ₹ crore">
               {trendData.length > 0 ? (
                 <TrendAreaChart
                   data={trendData}
@@ -309,7 +309,7 @@ function ReplayPage() {
               )}
             </ChartPanel>
 
-            <ChartPanel title="Profit Trend" subtitle="Profit after tax (₹ Cr proxy)">
+            <ChartPanel title="Profit Trend" subtitle="Net profit, ₹ crore">
               {trendData.length > 0 ? (
                 <TrendAreaChart
                   data={trendData}
