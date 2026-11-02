@@ -9,7 +9,7 @@ import {
 } from './fetcher.js';
 import { validateResponse } from './validator.js';
 import { buildRecord } from './transformer.js';
-import { ensureSchema, getCompanyId, upsertFinancials, replaceLiveMetrics } from './storage.js';
+import { ensureSchema, getCompanyId, upsertFinancials, replaceLiveMetrics, hasTodaysPrices } from './storage.js';
 import { deriveMetrics } from './metrics.js';
 
 let running = false;
@@ -30,6 +30,12 @@ export async function processBank({ ticker, name }) {
       cashflow: validateResponse(cashflow, ticker, 'cash_flow') ? cashflow : null,
       historical_stats: validateResponse(quarterly, ticker, 'quarterly_results') ? quarterly : null,
     };
+
+    // A failed profile fetch (rate limit, outage) must not overwrite stored prices with nulls.
+    if (!responses.profile) {
+      log('WARN', ticker, 'Company profile unavailable; keeping the previously stored data');
+      return false;
+    }
 
     const companyId = await getCompanyId(ticker);
     if (!companyId) {
@@ -74,7 +80,18 @@ export function startAgentScheduler() {
     return;
   }
   log('INFO', 'SYSTEM', `Live data scheduler started, every ${hours}h`);
-  // First run shortly after boot, then on the interval.
-  setTimeout(() => refreshAllBanks().catch((e) => log('ERROR', 'SYSTEM', e.message)), 30_000);
+  // First run shortly after boot, unless today's prices are already stored, so that
+  // restarts and redeploys do not burn the daily API quota.
+  setTimeout(async () => {
+    try {
+      if (await hasTodaysPrices()) {
+        log('INFO', 'SYSTEM', "Today's prices already stored; skipping startup refresh");
+        return;
+      }
+      await refreshAllBanks();
+    } catch (e) {
+      log('ERROR', 'SYSTEM', e.message);
+    }
+  }, 30_000);
   setInterval(() => refreshAllBanks().catch((e) => log('ERROR', 'SYSTEM', e.message)), hours * 3600 * 1000);
 }

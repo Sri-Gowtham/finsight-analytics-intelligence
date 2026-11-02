@@ -21,6 +21,18 @@ export async function ensureSchema() {
   `);
 }
 
+/** True when every covered bank already has a priced row for today. */
+export async function hasTodaysPrices() {
+  const { rows } = await pool.query(
+    `SELECT count(DISTINCT company_id)::int AS n
+       FROM bank_financials_raw
+      WHERE fetch_date = CURRENT_DATE
+        AND market_data->>'current_price' IS NOT NULL`,
+  );
+  const { rows: total } = await pool.query('SELECT count(*)::int AS n FROM companies');
+  return total[0].n > 0 && rows[0].n >= total[0].n;
+}
+
 export async function getCompanyId(ticker) {
   const { rows } = await pool.query('SELECT company_id FROM companies WHERE ticker = $1', [ticker]);
   return rows.length ? rows[0].company_id : null;
@@ -58,14 +70,25 @@ export async function upsertFinancials(record) {
  */
 export async function replaceLiveMetrics(companyId, rows) {
   if (!rows.length) return 0;
-  const names = [...new Set(rows.map((r) => r.metric_name))];
+  // The source reports these only for the latest period, so keep earlier quarters' values
+  // and replace only the period being refreshed; that lets their trend build up over time.
+  const pointInTime = new Set(['ROA', 'ROE', 'PE', 'PriceToBook', 'MarketCap', 'Price']);
+  const seriesNames = [...new Set(rows.filter((r) => !pointInTime.has(r.metric_name)).map((r) => r.metric_name))];
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    await client.query(
-      'DELETE FROM financial_metrics WHERE company_id = $1 AND metric_name = ANY($2)',
-      [companyId, names],
-    );
+    if (seriesNames.length) {
+      await client.query(
+        'DELETE FROM financial_metrics WHERE company_id = $1 AND metric_name = ANY($2)',
+        [companyId, seriesNames],
+      );
+    }
+    for (const r of rows.filter((r) => pointInTime.has(r.metric_name))) {
+      await client.query(
+        'DELETE FROM financial_metrics WHERE company_id = $1 AND metric_name = $2 AND timestamp = $3',
+        [companyId, r.metric_name, r.timestamp],
+      );
+    }
     for (const r of rows) {
       await client.query(
         'INSERT INTO financial_metrics (company_id, metric_name, value, timestamp) VALUES ($1,$2,$3,$4)',

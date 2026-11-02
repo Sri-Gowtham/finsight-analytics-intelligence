@@ -28,6 +28,7 @@ router.get('/:ticker', requireAuth, requireRole('Analyst', 'CFO', 'Admin'), asyn
        FROM bank_financials_raw
        WHERE REPLACE(UPPER(ticker), '.NS', '') = UPPER($1)
        ORDER BY
+         CASE WHEN market_data->>'current_price' IS NOT NULL THEN 0 ELSE 1 END,
          CASE WHEN source = 'indianapi.in' THEN 0 ELSE 1 END,
          fetch_date DESC
        LIMIT 1`,
@@ -62,6 +63,7 @@ router.get('/', requireAuth, requireRole('Analyst', 'CFO', 'Admin'), async (req,
        FROM bank_financials_raw
        ORDER BY
          REPLACE(UPPER(ticker), '.NS', ''),
+         CASE WHEN market_data->>'current_price' IS NOT NULL THEN 0 ELSE 1 END,
          CASE WHEN source = 'indianapi.in' THEN 0 ELSE 1 END,
          fetch_date DESC`
     );

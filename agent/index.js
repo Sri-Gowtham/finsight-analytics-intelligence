@@ -44,6 +44,12 @@ export async function processBank(bank) {
       historical_stats: validateResponse(historical_stats, ticker, 'quarterly_results') ? historical_stats : null
     };
 
+    // A failed profile fetch (rate limit, outage) must not overwrite stored prices with nulls.
+    if (!responses.profile) {
+      log('WARN', ticker, 'Company profile unavailable; keeping the previously stored data');
+      return false;
+    }
+
     const companyId = await getCompanyId(ticker);
     if (!companyId) {
       log('WARN', ticker, `Company ID not found for ticker ${ticker}. Record will have null company_id.`);
