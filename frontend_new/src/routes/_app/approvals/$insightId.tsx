@@ -7,7 +7,7 @@ import { ErrorState, LoadingState, PageHeader } from "@/components/states";
 import { useBank, useInsight, useReviewInsight } from "@/lib/queries";
 import { useAuth } from "@/lib/auth-context";
 import { dateTime } from "@/lib/format";
-import { AiBadge, ConfidenceMeter, DirectionBadge, StatusBadge } from "@/components/data-display";
+import { ConfidenceMeter, DirectionBadge, StatusBadge } from "@/components/data-display";
 import { CfoBasisPanel } from "@/components/insights";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,12 +21,12 @@ export const Route = createFileRoute("/_app/approvals/$insightId")({
       {
         name: "description",
         content:
-          "Executive review of a single AI-generated banking insight, with a plain-language summary and the qualitative basis behind the recommendation.",
+          "Executive review of a single banking insight, with a plain-language summary and the qualitative basis behind the recommendation.",
       },
       { property: "og:title", content: "Insight Review — FinSight" },
       {
         property: "og:description",
-        content: "Approve or reject an AI-generated insight with a recorded decision note.",
+        content: "Approve or reject an insight with a recorded decision note.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -95,7 +95,6 @@ function ReviewPage() {
               <Badge variant="outline">{data.category}</Badge>
               <DirectionBadge direction={data.direction ?? "neutral"} />
               <StatusBadge status={data.status ?? "pending"} />
-              <AiBadge />
             </div>
             <p className="text-xs text-muted-foreground">
               Prepared {dateTime(data.generatedAt ?? (data as any).created_at)}

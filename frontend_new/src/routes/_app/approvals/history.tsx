@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_app/approvals/history")({
       {
         name: "description",
         content:
-          "Complete record of reviewed AI insights with the approving executive, decision note and timestamp for governance and audit.",
+          "Complete record of reviewed insights with the approving executive, decision note and timestamp for governance and audit.",
       },
       { property: "og:title", content: "Approval History — FinSight" },
       {

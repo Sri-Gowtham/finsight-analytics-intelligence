@@ -4,7 +4,7 @@ import { RoleGuard } from "@/components/RoleGuard";
 import { EmptyState, ErrorState, LoadingState, PageHeader } from "@/components/states";
 import { useBanks, useInsights } from "@/lib/queries";
 import { dateTime } from "@/lib/format";
-import { AiBadge, ConfidenceMeter, DirectionBadge } from "@/components/data-display";
+import { ConfidenceMeter, DirectionBadge } from "@/components/data-display";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -15,12 +15,12 @@ export const Route = createFileRoute("/_app/approvals/")({
       {
         name: "description",
         content:
-          "CFO review queue: approve or reject AI-generated banking insights with an executive summary and qualitative basis for each recommendation.",
+          "CFO review queue: approve or reject banking insights with an executive summary and qualitative basis for each recommendation.",
       },
       { property: "og:title", content: "Pending Approvals — FinSight" },
       {
         property: "og:description",
-        content: "Review and sign off AI-generated insights before they reach clients.",
+        content: "Review and sign off insights before they reach clients.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -73,7 +73,6 @@ function ApprovalsPage() {
                     <Badge variant="outline">{insight.bankSymbol}</Badge>
                     <Badge variant="outline">{insight.category}</Badge>
                     <DirectionBadge direction={insight.direction} />
-                    <AiBadge />
                   </div>
                   <h2 className="text-base font-semibold">{insight.title}</h2>
                   <p className="max-w-3xl text-sm text-muted-foreground">
