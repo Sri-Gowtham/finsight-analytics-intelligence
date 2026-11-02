@@ -79,6 +79,21 @@ function quarterTickFormatter(val: string): string {
   return quarterLabel(val);
 }
 
+/** Compact axis tick, e.g. "Q2 2026" -> "Q2 '26", so many quarters fit without overlapping. */
+function quarterAxisTick(val: string): string {
+  const m = /^Q(\d) (\d{4})$/.exec(quarterLabel(val));
+  return m ? `Q${m[1]} '${m[2]!.slice(2)}` : quarterLabel(val);
+}
+
+/** Thin out crowded ticks instead of letting labels collide. */
+const xAxisSpacing = { interval: "preserveStartEnd" as const, minTickGap: 20 };
+
+/** True when a series has so few real points that a line or area would be invisible. */
+function isSparse(data: unknown[], key: string): boolean {
+  const n = (data as Record<string, unknown>[]).filter((r) => Number.isFinite(r[key] as number)).length;
+  return n > 0 && n <= 2;
+}
+
 /** Identity formatter — avoids passing `undefined` which breaks exactOptionalPropertyTypes */
 const identityFormatter = (val: string) => String(val);
 const identityLabelFormatter = (label: string) => String(label);
@@ -188,7 +203,7 @@ export function TrendAreaChart({
           ))}
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-        <XAxis dataKey={xKey} {...axis} tickFormatter={formatQuarters ? quarterTickFormatter : identityFormatter} />
+        <XAxis dataKey={xKey} {...axis} {...xAxisSpacing} tickFormatter={formatQuarters ? quarterAxisTick : identityFormatter} />
         <YAxis {...axis} {...(unit ? { unit } : {})} />
         <Tooltip {...tooltipStyle} formatter={fmtTooltipValue} labelFormatter={formatQuarters ? quarterTickFormatter : identityFormatter} />
         {series.length > 1 ? <Legend wrapperStyle={{ fontSize: 12 }} /> : null}
@@ -200,6 +215,8 @@ export function TrendAreaChart({
             name={s.label}
             stroke={s.color ?? SERIES_COLORS[i % SERIES_COLORS.length]}
             strokeWidth={2}
+            dot={isSparse(data, s.key) ? { r: 5, strokeWidth: 2, fill: "var(--color-card)" } : false}
+            connectNulls
             fill={`url(#grad-${s.key})`}
             isAnimationActive={true}
             animationDuration={600}
@@ -230,7 +247,7 @@ export function TrendLineChart({
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-        <XAxis dataKey={xKey} {...axis} tickFormatter={formatQuarters ? quarterTickFormatter : identityFormatter} />
+        <XAxis dataKey={xKey} {...axis} {...xAxisSpacing} tickFormatter={formatQuarters ? quarterAxisTick : identityFormatter} />
         <YAxis {...axis} />
         <Tooltip {...tooltipStyle} formatter={fmtTooltipValue} labelFormatter={formatQuarters ? quarterTickFormatter : identityFormatter} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -242,7 +259,8 @@ export function TrendLineChart({
             name={s.label}
             stroke={s.color ?? SERIES_COLORS[i % SERIES_COLORS.length]}
             strokeWidth={2}
-            dot={false}
+            dot={isSparse(data, s.key) ? { r: 5, strokeWidth: 2, fill: "var(--color-card)" } : false}
+            connectNulls
             activeDot={{ r: 5, strokeWidth: 2 }}
             isAnimationActive={true}
             animationDuration={600}
@@ -272,7 +290,7 @@ export function ComparisonBarChart({
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-        <XAxis dataKey={xKey} {...axis} interval={0} tickFormatter={formatQuarters ? quarterTickFormatter : identityFormatter} />
+        <XAxis dataKey={xKey} {...axis} {...xAxisSpacing} tickFormatter={formatQuarters ? quarterAxisTick : identityFormatter} />
         <YAxis {...axis} />
         <Tooltip {...tooltipStyle} formatter={fmtTooltipValue} labelFormatter={formatQuarters ? quarterTickFormatter : identityFormatter} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -359,7 +377,7 @@ export function GradientAreaChart({
           })}
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-        <XAxis dataKey={xKey} {...axis} tickFormatter={formatQuarters ? quarterTickFormatter : identityFormatter} />
+        <XAxis dataKey={xKey} {...axis} {...xAxisSpacing} tickFormatter={formatQuarters ? quarterAxisTick : identityFormatter} />
         <YAxis {...axis} />
         <Tooltip {...tooltipStyle} formatter={fmtTooltipValue} labelFormatter={formatQuarters ? quarterTickFormatter : identityFormatter} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -371,6 +389,8 @@ export function GradientAreaChart({
             name={s.label}
             stroke={s.color ?? SERIES_COLORS[i % SERIES_COLORS.length]}
             strokeWidth={2}
+            dot={isSparse(data, s.key) ? { r: 5, strokeWidth: 2, fill: "var(--color-card)" } : false}
+            connectNulls
             fill={`url(#revgrad-${s.key})`}
             isAnimationActive={true}
             animationDuration={600}

@@ -134,29 +134,42 @@ function ComparePage() {
 
   // ── Build chart data from the banks' history arrays ──
 
-  const allQuarters = chosen.length > 0
-    ? (chosen[0]?.history ?? []).map((p) => p.quarter)
-    : [];
+  // Banks report different latest quarters, so use every quarter any chosen bank has, in order.
+  const quarterKey = (q: string) => {
+    const m = /^Q(\d) (\d{4})$/.exec(q);
+    return m ? Number(m[2]) * 10 + Number(m[1]) : 0;
+  };
+  const allQuarters = Array.from(new Set(chosen.flatMap((b) => b.history.map((p) => p.quarter))))
+    .sort((x, y) => quarterKey(x) - quarterKey(y));
 
   // NIM trend data: one row per quarter, one key per bank
   const nimTrend = allQuarters.map((q) => {
     const row: Record<string, string | number> = { quarter: q };
     chosen.forEach((bank) => {
       const pt = bank.history.find(h => h.quarter === q);
-      row[bank.symbol] = Number.isFinite(pt?.eps) ? (pt?.eps as number) : 0;
+      if (Number.isFinite(pt?.eps)) row[bank.symbol] = pt!.eps;
     });
     return row;
   });
 
-  // ROE grouped bar data: one row per quarter, one key per bank
-  const roeTrend = allQuarters.map((q) => {
-    const row: Record<string, string | number> = { quarter: q };
-    chosen.forEach((bank) => {
-      const pt = bank.history.find(h => h.quarter === q);
-      row[bank.symbol] = pt?.roe ?? 0;
+  // ROE grouped bar data: one row per quarter that has a reported ROE, one key per bank
+  const roeTrend = allQuarters
+    .filter((q) => chosen.some((bank) => Number.isFinite(bank.history.find((h) => h.quarter === q)?.roe)))
+    .map((q) => {
+      const row: Record<string, string | number> = { quarter: q };
+      chosen.forEach((bank) => {
+        const pt = bank.history.find((h) => h.quarter === q);
+        if (Number.isFinite(pt?.roe)) row[bank.symbol] = pt!.roe;
+      });
+      return row;
     });
-    return row;
-  });
+
+  // Banks report their latest ROE in different quarters, so until a real history builds up
+  // compare the latest reported value per bank instead of spreading them across quarters.
+  const roeLatest = chosen
+    .filter((b) => Number.isFinite(b.latest.roe))
+    .map((b) => ({ name: b.symbol, ROE: b.latest.roe }));
+  const roeMissing = chosen.filter((b) => !Number.isFinite(b.latest.roe)).map((b) => b.symbol);
 
   // ROA horizontal bar data: one row per bank, latest values
   const roaData = chosen.map((b) => ({
@@ -169,7 +182,7 @@ function ComparePage() {
     const row: Record<string, string | number> = { quarter: q };
     chosen.forEach((bank) => {
       const pt = bank.history.find(h => h.quarter === q);
-      row[bank.symbol] = pt?.revenueGrowth ?? 0;
+      if (Number.isFinite(pt?.revenueGrowth)) row[bank.symbol] = pt!.revenueGrowth;
     });
     return row;
   });
@@ -311,8 +324,11 @@ function ComparePage() {
 
             {/* b) ROE Grouped Bar */}
             {(metricFilter === "all" || metricFilter === "ROE") && (
-              <ChartPanel title="ROE Comparison" subtitle="Return on Equity by quarter">
-                {roeTrend.length > 0 ? (
+              <ChartPanel
+                title="ROE Comparison"
+                subtitle={roeTrend.length >= 3 ? "Return on Equity by quarter" : "Return on Equity, latest reported period"}
+              >
+                {roeTrend.length >= 3 ? (
                   <ComparisonBarChart
                     data={roeTrend}
                     series={bankSeries}
@@ -320,8 +336,24 @@ function ComparePage() {
                     height={300}
                     formatQuarters
                   />
+                ) : roeLatest.length > 0 ? (
+                  <>
+                    <ComparisonBarChart
+                      data={roeLatest}
+                      series={[{ key: "ROE", label: "ROE %" }]}
+                      xKey="name"
+                      height={280}
+                    />
+                    {roeMissing.length > 0 && (
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Not reported by the data source: {roeMissing.join(", ")}.
+                      </p>
+                    )}
+                  </>
                 ) : (
-                  <ChartSkeleton height={300} />
+                  <p className="py-16 text-center text-sm text-muted-foreground">
+                    No ROE reported for the selected banks yet.
+                  </p>
                 )}
               </ChartPanel>
             )}

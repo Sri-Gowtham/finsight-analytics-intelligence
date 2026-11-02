@@ -130,6 +130,11 @@ function ReplayPage() {
     margin: p.profitMargin,
   }));
 
+  // The data source reports ROE/ROA only for the latest period, so plot just the quarters that have a value.
+  const roeData = trendData.filter((p) => Number.isFinite(p.roe));
+  const roaData = trendData.filter((p) => Number.isFinite(p.roa));
+  const sparseNote = "The data source reports this ratio only for the latest period; the trend fills in as each new quarter is reported.";
+
   // Delta calculations
   const deltas = prevPoint ? [
     { label: "Revenue", current: point.revenue, prev: prevPoint.revenue },
@@ -323,28 +328,34 @@ function ReplayPage() {
             </ChartPanel>
 
             <ChartPanel title="ROE Trend" subtitle="Return on equity, percent">
-              {trendData.length > 0 ? (
-                <TrendAreaChart
-                  data={trendData}
-                  series={[{ key: "roe", label: "ROE" }]}
-                  height={240}
-                  formatQuarters
-                />
+              {roeData.length > 0 ? (
+                <>
+                  <TrendAreaChart
+                    data={roeData}
+                    series={[{ key: "roe", label: "ROE" }]}
+                    height={roeData.length < 3 ? 200 : 240}
+                    formatQuarters
+                  />
+                  {roeData.length < 3 && <p className="mt-2 text-xs text-muted-foreground">{sparseNote}</p>}
+                </>
               ) : (
-                <ChartSkeleton height={240} />
+                <p className="py-16 text-center text-sm text-muted-foreground">No ROE reported for this bank yet.</p>
               )}
             </ChartPanel>
 
             <ChartPanel title="ROA Trend" subtitle="Return on assets, percent">
-              {trendData.length > 0 ? (
-                <TrendAreaChart
-                  data={trendData}
-                  series={[{ key: "roa", label: "ROA" }]}
-                  height={240}
-                  formatQuarters
-                />
+              {roaData.length > 0 ? (
+                <>
+                  <TrendAreaChart
+                    data={roaData}
+                    series={[{ key: "roa", label: "ROA" }]}
+                    height={roaData.length < 3 ? 200 : 240}
+                    formatQuarters
+                  />
+                  {roaData.length < 3 && <p className="mt-2 text-xs text-muted-foreground">{sparseNote}</p>}
+                </>
               ) : (
-                <ChartSkeleton height={240} />
+                <p className="py-16 text-center text-sm text-muted-foreground">No ROA reported for this bank yet.</p>
               )}
             </ChartPanel>
           </div>
